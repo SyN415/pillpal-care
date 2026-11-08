@@ -1,15 +1,16 @@
 /**
- * PillPal Care — Mobile Medication Companion Engine (Iteration 2)
+ * PillPal Care — Mobile Medication Companion Engine (Iteration 3: 3D Pillo Assets & UI)
  * Implements:
- * 1. Dual Adult & Kid-Friendly Personas
- * 2. Kid Mode "Worried -> Worried-Angry -> Angry" Emotional Progression
- * 3. Full Multi-Modal Guarantee Suite:
+ * 1. Studio 3D Pillo.care Character & Icon Assets (window.PILLO_ASSETS)
+ * 2. Dual Adult & Kid-Friendly Personas
+ * 3. Kid Mode "Worried -> Worried-Angry -> Angry" 3D Character Progression
+ * 4. Multi-Modal Guarantee Suite:
  *    - Camera / Photo Pill & Cup Scanner
- *    - Child Face Scan Verification (Biometric Face Mesh)
- *    - Shake-Phone-with-Water Gesture (DeviceMotion + Interactive Shake Meter)
+ *    - Child Face Scan Verification (Kid Mode)
+ *    - Shake-Phone-with-Water Gesture (DeviceMotion + 3D Water Shield Meter)
  *    - Parent 4-Digit PIN Verification (Kid Mode)
  *    - Physical Dose Checklist + 3-Second Press-and-Hold Commitment Seal
- * 4. Specific Persistent Lockdown Triggers:
+ * 5. Specific Persistent Lockdown Triggers:
  *    - Trigger A: Circle Timer reaches 00:00 without taking medication
  *    - Trigger B: Critical Refill Alert (stock drops to <= 2 doses)
  *    - Trigger C: Excessive Snoozing (> 2 consecutive snoozes)
@@ -19,6 +20,7 @@ const INITIAL_DATA = {
   persona: 'adult', // 'adult' | 'kid'
   activeTab: 'today', // 'today' | 'log' | 'cabinet'
   soundEnabled: true,
+  focusMusicPlaying: true,
   smartDrivingSnooze: true,
   smartCallPause: true,
   caregiverAlerts: true,
@@ -34,7 +36,7 @@ const INITIAL_DATA = {
   kidLockdownStage: 'worried', // 'worried' | 'worried-angry' | 'angry'
   dismissAttemptsBlocked: 0,
 
-  // Multi-Modal Guarantee Sensor States (Reset on each new dose/lockdown)
+  // Multi-Modal Guarantee Sensor States
   verification: {
     pillPhotoScanned: false,
     pillScanningNow: false,
@@ -51,29 +53,29 @@ const INITIAL_DATA = {
       {
         id: 'adult-1',
         name: 'Lisinopril',
-        dosage: '10 mg • 1 Tablet',
-        visualDesc: '1 Pink Round Tablet + Full Glass of Water',
+        dosage: '10 mg • 1 Capsule before meal',
+        visualDesc: '1 Pink & White Capsule + Full Glass of Water',
         instructions: 'Take in the morning. Keep consistent daily timing.',
         scheduledTime: '08:00 AM',
-        icon: '💊',
+        assetKey: 'icon_adult_pills',
         stockLeft: 18,
         refillThreshold: 5,
         criticalRefillThreshold: 2,
         timerTotal: 45,
         timerRemaining: 45,
         snoozeCount: 0,
-        status: 'pending', // 'pending' | 'taken' | 'overdue'
+        status: 'pending',
         guaranteedAt: null,
         snoozeReason: null
       },
       {
         id: 'adult-2',
         name: 'Omega-3 + Vitamin D3',
-        dosage: '2000 IU • 1 Softgel',
-        visualDesc: '1 Amber Translucent Softgel with Food',
-        instructions: 'Take alongside breakfast or lunch for absorption.',
+        dosage: '2000 IU • 1 Amber Softgel',
+        visualDesc: '1 Amber Translucent Softgel with Meal',
+        instructions: 'Critical stock warning — refill required soon.',
         scheduledTime: '12:30 PM',
-        icon: '☀️',
+        assetKey: 'icon_refill_alert',
         stockLeft: 2, // Critical Refill Alert ready!
         refillThreshold: 5,
         criticalRefillThreshold: 2,
@@ -88,10 +90,10 @@ const INITIAL_DATA = {
         id: 'adult-3',
         name: 'Magnesium Glycinate',
         dosage: '200 mg • 2 Capsules',
-        visualDesc: '2 White Capsules + Water before bed',
+        visualDesc: '2 Capsules + Water before bed',
         instructions: 'Supports evening recovery and sleep schedule.',
         scheduledTime: '09:00 PM',
-        icon: '🌙',
+        assetKey: 'icon_water_shield',
         stockLeft: 24,
         refillThreshold: 5,
         criticalRefillThreshold: 2,
@@ -107,11 +109,11 @@ const INITIAL_DATA = {
       {
         id: 'kid-1',
         name: 'Berry Shield Amoxicillin',
-        dosage: '5 mL • Bubblegum Berry Cup',
-        visualDesc: '1 Pink Measuring Cup (5 mL) + Big Sip of Water',
+        dosage: '5 mL • Strawberry Measuring Cup',
+        visualDesc: '1 Pink Strawberry Cup (5 mL) + Big Sip of Water',
         instructions: 'Super-Shield potion! Shake bottle well before pouring.',
         scheduledTime: '08:00 AM',
-        icon: '🍓',
+        assetKey: 'icon_kid_meds',
         stockLeft: 12,
         refillThreshold: 5,
         criticalRefillThreshold: 2,
@@ -124,12 +126,12 @@ const INITIAL_DATA = {
       },
       {
         id: 'kid-2',
-        name: 'Dino-Breathe Spacer Puff',
-        dosage: '2 Puffs • Orange Inhaler',
-        visualDesc: '2 Slow Dino Breaths with Spacer Mask',
+        name: 'Dino-Breathe Orange Inhaler',
+        dosage: '2 Puffs • Friendly Dino Spacer',
+        visualDesc: '2 Slow Dino Breaths with Orange Inhaler',
         instructions: 'Count to 5 like a friendly brontosaurus on each breath!',
         scheduledTime: '04:00 PM',
-        icon: '🦖',
+        assetKey: 'icon_refill_alert',
         stockLeft: 2, // Critical refill threshold!
         refillThreshold: 6,
         criticalRefillThreshold: 2,
@@ -144,10 +146,10 @@ const INITIAL_DATA = {
         id: 'kid-3',
         name: 'Sunshine Star Gummy',
         dosage: '1 Gummy • Orange Chew',
-        visualDesc: '1 Sunny Orange Star Gummy chewed well',
+        visualDesc: '1 Sunny Star Gummy + Water Sip',
         instructions: 'Earned +1 Hero Star Sticker when taken on time!',
         scheduledTime: '07:30 AM',
-        icon: '⭐',
+        assetKey: 'icon_water_shield',
         stockLeft: 29,
         refillThreshold: 5,
         criticalRefillThreshold: 2,
@@ -187,11 +189,49 @@ let countdownInterval = null;
 let kidEscalationInterval = null;
 let holdInterval = null;
 let holdProgress = 0;
-let activeSheetMode = null; // 'calm-guarantee' | 'add-med' | null
+let activeSheetMode = null;
 let activeCameraStream = null;
 
 /* ==========================================================================
-   Web Audio Synthesizer (Gentle Chimes, Worried Whimper, & Angry Buzzer)
+   3D Asset Resolver (Uses window.PILLO_ASSETS or "./assets/<key>.webp")
+   ========================================================================== */
+
+function getAssetURI(key) {
+  if (window.PILLO_ASSETS && window.PILLO_ASSETS[key]) {
+    return window.PILLO_ASSETS[key];
+  }
+  return `./assets/${key}.webp`;
+}
+
+function getCompanionAssetKey(persona, mood) {
+  if (persona === 'adult') {
+    if (mood === 'angry') return 'adult_angry';
+    if (mood === 'impatient' || mood === 'worried') return 'adult_impatient';
+    if (mood === 'celebrating') return 'adult_celebrating';
+    return 'adult_calm';
+  } else {
+    if (mood === 'worried' || mood === 'impatient') return 'kid_worried';
+    if (mood === 'worried-angry') return 'kid_worried_angry';
+    if (mood === 'angry') return 'kid_angry';
+    return 'kid_calm';
+  }
+}
+
+function getCompanionArtworkHTML(persona, mood, animClass = 'mascot-calm') {
+  const key = getCompanionAssetKey(persona, mood);
+  const src = getAssetURI(key);
+  return `<img src="${src}" alt="${persona} ${mood} companion" class="mascot-3d-img ${animClass}" />`;
+}
+
+function getMedArtworkSrc(med) {
+  if (med.stockLeft <= med.criticalRefillThreshold && med.status !== 'taken') {
+    return getAssetURI('icon_refill_alert');
+  }
+  return getAssetURI(med.assetKey || (state.persona === 'kid' ? 'icon_kid_meds' : 'icon_adult_pills'));
+}
+
+/* ==========================================================================
+   Web Audio Synthesizer
    ========================================================================== */
 
 let audioCtx = null;
@@ -207,7 +247,6 @@ function playTone(type) {
     const now = audioCtx.currentTime;
 
     if (type === 'worried-chime') {
-      // Soft descending worried two-note chime for Kid Mode initial lockdown
       [440, 349.23].forEach((freq, idx) => {
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
@@ -275,136 +314,7 @@ function playTone(type) {
 }
 
 /* ==========================================================================
-   Expressive Companion SVG Generator
-   - Adult ("Pillo Guard"): calm -> impatient -> angry -> celebrating
-   - Kid ("Barnaby the Buddy"): calm -> worried -> worried-angry -> angry -> celebrating
-   ========================================================================== */
-
-function getCompanionSVG(persona, mood, size = 84) {
-  if (persona === 'adult') {
-    if (mood === 'angry') {
-      return `
-        <svg width="${size}" height="${size}" viewBox="0 0 120 120" fill="none">
-          <circle cx="24" cy="22" r="7" fill="#FCA5A5" opacity="0.85"/>
-          <circle cx="96" cy="20" r="8" fill="#FCA5A5" opacity="0.85"/>
-          <path d="M55 8 L65 18 M65 8 L55 18" stroke="#FEF08A" stroke-width="3.5" stroke-linecap="round"/>
-          <rect x="26" y="18" width="68" height="88" rx="34" fill="#EF4444" stroke="#7F1D1D" stroke-width="4"/>
-          <path d="M26 62 H94 V72 C94 90.77 78.77 106 60 106 C41.22 106 26 90.77 26 72 V62 Z" fill="#B91C1C"/>
-          <path d="M36 42 L55 51" stroke="#450A0A" stroke-width="5.5" stroke-linecap="round"/>
-          <path d="M84 42 L65 51" stroke="#450A0A" stroke-width="5.5" stroke-linecap="round"/>
-          <circle cx="46" cy="54" r="6" fill="#FEF08A"/><circle cx="46" cy="54" r="2.5" fill="#450A0A"/>
-          <circle cx="74" cy="54" r="6" fill="#FEF08A"/><circle cx="74" cy="54" r="2.5" fill="#450A0A"/>
-          <rect x="42" y="70" width="36" height="16" rx="6" fill="#450A0A" stroke="#FCA5A5" stroke-width="2"/>
-          <path d="M42 78 H78 M54 70 V86 M66 70 V86" stroke="#FFFFFF" stroke-width="2.5"/>
-        </svg>
-      `;
-    }
-    if (mood === 'impatient' || mood === 'worried') {
-      return `
-        <svg width="${size}" height="${size}" viewBox="0 0 120 120" fill="none" class="mascot-impatient">
-          <rect x="28" y="18" width="64" height="86" rx="32" fill="#F59E0B" stroke="#78350F" stroke-width="3.5"/>
-          <path d="M28 61 H92 V72 C92 89.67 77.67 104 60 104 C42.32 104 28 89.67 28 72 V61 Z" fill="#D97706"/>
-          <path d="M96 30 C96 30 102 38 102 42 C102 45.3 99.3 48 96 48 C92.7 48 90 45.3 90 42 C90 38 96 30 96 30 Z" fill="#38BDF8"/>
-          <path d="M38 44 L52 47" stroke="#451A03" stroke-width="4" stroke-linecap="round"/>
-          <path d="M82 42 L68 47" stroke="#451A03" stroke-width="4" stroke-linecap="round"/>
-          <circle cx="46" cy="53" r="4.5" fill="#451A03"/><circle cx="74" cy="53" r="4.5" fill="#451A03"/>
-          <path d="M46 74 Q53 69 60 74 T74 74" stroke="#451A03" stroke-width="4" stroke-linecap="round" fill="none"/>
-        </svg>
-      `;
-    }
-    return `
-      <svg width="${size}" height="${size}" viewBox="0 0 120 120" fill="none" class="mascot-calm">
-        <rect x="28" y="18" width="64" height="86" rx="32" fill="#34D399" stroke="#16382C" stroke-width="3.5"/>
-        <path d="M28 61 H92 V72 C92 89.67 77.67 104 60 104 C42.32 104 28 89.67 28 72 V61 Z" fill="#10B981"/>
-        <circle cx="46" cy="50" r="4.5" fill="#16382C"/><circle cx="74" cy="50" r="4.5" fill="#16382C"/>
-        <circle cx="38" cy="57" r="4" fill="#F43F5E" opacity="0.35"/><circle cx="82" cy="57" r="4" fill="#F43F5E" opacity="0.35"/>
-        <path d="M48 68 Q60 77 72 68" stroke="#16382C" stroke-width="4" stroke-linecap="round" fill="none"/>
-      </svg>
-    `;
-  } else {
-    // KID PERSONA ("Barnaby the Buddy"): Worried -> Worried-Angry -> Angry
-    if (mood === 'worried' || mood === 'impatient') {
-      return `
-        <svg width="${size}" height="${size}" viewBox="0 0 120 120" fill="none" class="mascot-impatient">
-          <!-- Drooping Worried Horns/Ears -->
-          <path d="M28 38 L12 28 L36 28 Z" fill="#FDE047" stroke="#1E1B4B" stroke-width="3"/>
-          <path d="M92 38 L108 28 L84 28 Z" fill="#FDE047" stroke="#1E1B4B" stroke-width="3"/>
-          <!-- Soft Periwinkle-Blue Worried Body -->
-          <circle cx="60" cy="64" r="41" fill="#818CF8" stroke="#1E1B4B" stroke-width="3.5"/>
-          <!-- Upturned Sympathetic Worried Eyebrows (/ \) -->
-          <path d="M34 48 L52 41" stroke="#1E1B4B" stroke-width="4.5" stroke-linecap="round"/>
-          <path d="M86 48 L68 41" stroke="#1E1B4B" stroke-width="4.5" stroke-linecap="round"/>
-          <!-- Big Glistening Puppy Eyes -->
-          <circle cx="46" cy="57" r="7.5" fill="#FFFFFF"/>
-          <circle cx="46" cy="58" r="4" fill="#1E1B4B"/>
-          <circle cx="44" cy="55" r="2" fill="#FFFFFF"/>
-          <circle cx="74" cy="57" r="7.5" fill="#FFFFFF"/>
-          <circle cx="74" cy="58" r="4" fill="#1E1B4B"/>
-          <circle cx="72" cy="55" r="2" fill="#FFFFFF"/>
-          <!-- Little Glistening Tear Drop -->
-          <path d="M36 65 C36 65 40 72 40 75 C40 77.5 38.2 79 36 79 C33.8 79 32 77.5 32 75 C32 72 36 65 36 65 Z" fill="#38BDF8"/>
-          <!-- Quivering Worried Frown -->
-          <path d="M46 82 Q60 72 74 82" stroke="#1E1B4B" stroke-width="4.5" stroke-linecap="round" fill="none"/>
-        </svg>
-      `;
-    }
-    if (mood === 'worried-angry') {
-      return `
-        <svg width="${size}" height="${size}" viewBox="0 0 120 120" fill="none">
-          <!-- Perking Horns -->
-          <path d="M28 36 L15 19 L38 26 Z" fill="#FDE047" stroke="#7C2D12" stroke-width="3"/>
-          <path d="M92 36 L105 19 L82 26 Z" fill="#FDE047" stroke="#7C2D12" stroke-width="3"/>
-          <!-- Transitioning Tangerine-Coral Body -->
-          <circle cx="60" cy="64" r="41" fill="#FB923C" stroke="#7C2D12" stroke-width="4"/>
-          <circle cx="34" cy="69" r="8" fill="#EF4444" opacity="0.65"/>
-          <circle cx="86" cy="69" r="8" fill="#EF4444" opacity="0.65"/>
-          <!-- Asymmetric Worried-Turning-Angry Brows -->
-          <path d="M35 45 L54 52" stroke="#431407" stroke-width="5" stroke-linecap="round"/>
-          <path d="M85 45 L66 52" stroke="#431407" stroke-width="5" stroke-linecap="round"/>
-          <circle cx="46" cy="57" r="7" fill="#FFFFFF"/>
-          <circle cx="46" cy="57" r="3.5" fill="#431407"/>
-          <circle cx="74" cy="57" r="7" fill="#FFFFFF"/>
-          <circle cx="74" cy="57" r="3.5" fill="#431407"/>
-          <!-- Upset Pouty Grumble Mouth -->
-          <path d="M44 81 Q60 71 76 81" stroke="#431407" stroke-width="5" stroke-linecap="round" fill="none"/>
-        </svg>
-      `;
-    }
-    if (mood === 'angry') {
-      return `
-        <svg width="${size}" height="${size}" viewBox="0 0 120 120" fill="none">
-          <path d="M28 34 L16 14 L38 24 Z" fill="#FDE047" stroke="#7F1D1D" stroke-width="3"/>
-          <path d="M92 34 L104 14 L82 24 Z" fill="#FDE047" stroke="#7F1D1D" stroke-width="3"/>
-          <circle cx="60" cy="64" r="42" fill="#FB7185" stroke="#881337" stroke-width="4"/>
-          <circle cx="32" cy="70" r="10" fill="#E11D48"/>
-          <circle cx="88" cy="70" r="10" fill="#E11D48"/>
-          <path d="M34 45 L55 55" stroke="#881337" stroke-width="6" stroke-linecap="round"/>
-          <path d="M86 45 L65 55" stroke="#881337" stroke-width="6" stroke-linecap="round"/>
-          <circle cx="46" cy="58" r="7" fill="#FFFFFF"/><circle cx="47" cy="58" r="3.5" fill="#881337"/>
-          <circle cx="74" cy="58" r="7" fill="#FFFFFF"/><circle cx="73" cy="58" r="3.5" fill="#881337"/>
-          <path d="M42 82 Q60 70 78 82 Z" fill="#881337"/>
-          <polygon points="48,79 52,86 56,78" fill="#FFFFFF"/>
-          <polygon points="64,78 68,86 72,79" fill="#FFFFFF"/>
-        </svg>
-      `;
-    }
-    // Calm / Happy Kid Mascot
-    return `
-      <svg width="${size}" height="${size}" viewBox="0 0 120 120" fill="none" class="mascot-calm">
-        <path d="M30 34 L20 16 L40 26 Z" fill="#FBBF24" stroke="#1E293B" stroke-width="3"/>
-        <path d="M90 34 L100 16 L80 26 Z" fill="#FBBF24" stroke="#1E293B" stroke-width="3"/>
-        <circle cx="60" cy="64" r="40" fill="#38BDF8" stroke="#1E293B" stroke-width="3.5"/>
-        <circle cx="45" cy="56" r="6.5" fill="#FFFFFF"/><circle cx="45" cy="56" r="3.5" fill="#1E293B"/>
-        <circle cx="75" cy="56" r="6.5" fill="#FFFFFF"/><circle cx="75" cy="56" r="3.5" fill="#1E293B"/>
-        <circle cx="34" cy="66" r="5" fill="#F472B6" opacity="0.6"/><circle cx="86" cy="66" r="5" fill="#F472B6" opacity="0.6"/>
-        <path d="M44 72 Q60 86 76 72" stroke="#1E293B" stroke-width="4.5" stroke-linecap="round" fill="none"/>
-      </svg>
-    `;
-  }
-}
-
-/* ==========================================================================
-   State Helpers & Verification Reset
+   State Helpers & Circle Timer Engine
    ========================================================================== */
 
 function getCurrentMeds() {
@@ -453,10 +363,6 @@ function formatSeconds(sec) {
   return `${m}:${s}`;
 }
 
-/* ==========================================================================
-   Circle Timer Loop & Kid Mode Worried -> Angry Escalation Loop
-   ========================================================================== */
-
 function startCircleTimerLoop() {
   if (countdownInterval) clearInterval(countdownInterval);
   countdownInterval = setInterval(() => {
@@ -480,7 +386,6 @@ function startKidMoodEscalationTimer() {
   if (kidEscalationInterval) clearInterval(kidEscalationInterval);
   if (state.persona !== 'kid' || !state.lockdownActive) return;
 
-  // Automatically escalates Kid Mode from Worried -> Worried-Angry -> Angry if unverified!
   kidEscalationInterval = setInterval(() => {
     if (!state.lockdownActive || state.persona !== 'kid') {
       clearInterval(kidEscalationInterval);
@@ -515,7 +420,6 @@ function triggerPersistentLockdown(med, reason = 'timer-expired') {
   state.dismissAttemptsBlocked = 0;
   resetVerificationState();
 
-  // In Kid Mode, start Worried and escalate to Angry!
   if (state.persona === 'kid') {
     state.kidLockdownStage = 'worried';
     playTone('worried-chime');
@@ -530,7 +434,6 @@ function triggerAngryReject() {
   state.dismissAttemptsBlocked += 1;
   playTone('reject');
 
-  // If in Kid Mode, trying to dismiss makes Barnaby escalate faster toward Angry!
   if (state.persona === 'kid') {
     if (state.kidLockdownStage === 'worried') {
       state.kidLockdownStage = 'worried-angry';
@@ -552,11 +455,9 @@ function triggerAngryReject() {
 
 /* ==========================================================================
    Multi-Modal Verification Sensor Handlers
-   (Camera Pill Scan, Child Face Scan, Shake-with-Water, Parent PIN)
    ========================================================================== */
 
 async function startCameraSensorScan(kind) {
-  // kind: 'pill' | 'face'
   if (kind === 'pill') {
     state.verification.pillScanningNow = true;
   } else {
@@ -565,7 +466,6 @@ async function startCameraSensorScan(kind) {
   playTone('scan-beep');
   renderAll();
 
-  // Attempt optional live camera preview if available in browser
   const videoId = kind === 'pill' ? 'pill-scanner-video' : 'face-scanner-video';
   try {
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
@@ -579,9 +479,7 @@ async function startCameraSensorScan(kind) {
         videoEl.play().catch(() => {});
       }
     }
-  } catch (_) {
-    // Graceful simulated AI vision scan when in headless/sandbox environment
-  }
+  } catch (_) {}
 
   setTimeout(() => {
     stopCameraStream();
@@ -594,7 +492,7 @@ async function startCameraSensorScan(kind) {
     }
     playTone('scan-beep');
     renderAll();
-  }, 1300);
+  }, 1250);
 }
 
 function stopCameraStream() {
@@ -610,7 +508,6 @@ function triggerWaterShakeStep() {
   renderAll();
 }
 
-// Listen for real mobile phone accelerometer shake (DeviceMotionEvent)
 window.addEventListener('devicemotion', (event) => {
   if (!state.lockdownActive && !activeSheetMode) return;
   const acc = event.accelerationIncludingGravity;
@@ -659,7 +556,6 @@ function quickVerifyAllSensors() {
 function isGuaranteeReadyToHold() {
   const v = state.verification;
   if (state.lockdownReason === 'critical-refill') {
-    // For critical refill lockdown, require Pill/Bottle Photo Scan + Checklist
     return v.pillPhotoScanned && v.checklistConfirmed;
   }
   if (state.persona === 'kid') {
@@ -721,8 +617,8 @@ function completeGuaranteeAction() {
   if (!med) return;
 
   if (state.lockdownReason === 'critical-refill') {
-    // Completed Critical Refill Guarantee!
     med.stockLeft += 30;
+    med.assetKey = state.persona === 'kid' ? 'icon_kid_meds' : 'icon_adult_pills';
     state.lockdownActive = false;
     state.lockdownReason = 'timer-expired';
     activeSheetMode = null;
@@ -734,7 +630,7 @@ function completeGuaranteeAction() {
       medName: `${med.name} (Refill Verified)`,
       dosage: '+30 Doses Restocked',
       timestamp: 'Just now',
-      method: 'Bottle Photo Scan + 3s Hold Refill Guarantee',
+      method: 'Rx Bottle Photo Scan + 3s Hold Refill Guarantee',
       wasOverdue: true
     });
 
@@ -758,7 +654,7 @@ function completeGuaranteeAction() {
 
   const methodDesc =
     state.persona === 'kid'
-      ? `Child Face Scan + Pill Scan + Water Shake + Parent PIN (${state.parentPinCode}) + 3s Hold`
+      ? `Child Face Scan + Cup Scan + Water Shake + Parent PIN (${state.parentPinCode}) + 3s Hold`
       : `Pill Photo Scan + Water Shake (100%) + 3s Hold Guarantee`;
 
   state.guaranteeLogs.unshift({
@@ -773,7 +669,6 @@ function completeGuaranteeAction() {
 
   playTone('success');
 
-  // SPECIFIC TRIGGER #2: Check if taking this dose dropped stock into Critical Refill Alert (<= 2 left)!
   if (med.stockLeft <= med.criticalRefillThreshold) {
     renderAll();
     setTimeout(() => {
@@ -813,7 +708,7 @@ function simulateTimerState(mode) {
   } else if (mode === 'expired') {
     triggerPersistentLockdown(med, 'timer-expired');
   } else if (mode === 'critical-refill') {
-    med.stockLeft = 2; // Critical threshold!
+    med.stockLeft = 2;
     triggerPersistentLockdown(med, 'critical-refill');
   }
 }
@@ -823,7 +718,6 @@ function applySmartSnooze(reasonLabel, extraSeconds = 45) {
   if (!med) return;
 
   med.snoozeCount = (med.snoozeCount || 0) + 1;
-  // SPECIFIC TRIGGER #3: More than 2 consecutive snoozes triggers persistent lockdown!
   if (med.snoozeCount > 2) {
     triggerPersistentLockdown(med, 'max-snooze');
     return;
@@ -837,7 +731,7 @@ function applySmartSnooze(reasonLabel, extraSeconds = 45) {
   activeSheetMode = null;
 
   renderAll();
-  showCelebrationToast(`⏳ Smart Snooze (${med.snoozeCount}/2): ${reasonLabel}. Circle Timer restarted!`);
+  showCelebrationToast(`⏳ Rescheduled (${med.snoozeCount}/2): ${reasonLabel}. Circle Timer restarted!`);
 }
 
 function showCelebrationToast(message) {
@@ -856,7 +750,7 @@ function showCelebrationToast(message) {
 function getCompanionSpeechText(med, mood) {
   if (state.persona === 'adult') {
     if (med.status === 'taken') {
-      return `✨ "${med.name} is verified & logged (${med.guaranteedAt}). Stock remaining: ${med.stockLeft} doses."`;
+      return `✨ "${med.name} is verified & logged (${med.guaranteedAt}). +5 Charity Hearts earned!"`;
     }
     if (mood === 'angry') {
       return `😡 "The circle timer hit 00:00 and you haven't taken ${med.name}! Complete the Camera + Water Shake Guarantee!"`;
@@ -864,7 +758,7 @@ function getCompanionSpeechText(med, mood) {
     if (mood === 'impatient') {
       return `🤨 "Only ${med.timerRemaining}s left on the circle! Grab your water before my angry face locks your screen!"`;
     }
-    return `🙂 "Circle Timer active for ${med.name} (${med.visualDesc}). Take it before the ring runs out!"`;
+    return `🙂 "Focus music is on! Take ${med.name} (${med.visualDesc}) while the Time-Box ring is green."`;
   } else {
     if (med.status === 'taken') {
       return `🌟 "Woohoo! Leo's Face Scan & ${med.name} are guaranteed! Barnaby is doing a happy dance!"`;
@@ -878,7 +772,7 @@ function getCompanionSpeechText(med, mood) {
     if (mood === 'angry') {
       return `😠 "Barnaby was worried and now he's GRUMPY-ANGRY! Complete the Face Scan & Parent PIN Guarantee!"`;
     }
-    return `😄 "Hi Leo! It's time for ${med.name}. Let's take it while the circle is green!"`;
+    return `😄 "Hi Leo! It's time for ${med.name}. Let's take it while the circle is bright!"`;
   }
 }
 
@@ -890,7 +784,7 @@ function updateCircleTimerDOM() {
   const card = document.getElementById('circle-timer-card');
   if (card) card.setAttribute('data-mood', mood);
 
-  const radius = 80;
+  const radius = 86;
   const circumference = 2 * Math.PI * radius;
   const ratio = med.status === 'taken' ? 1 : Math.max(0, med.timerRemaining / med.timerTotal);
   const offset = circumference * (1 - ratio);
@@ -903,7 +797,7 @@ function updateCircleTimerDOM() {
 
   const readout = document.getElementById('countdown-readout');
   if (readout) {
-    readout.textContent = med.status === 'taken' ? 'DONE' : formatSeconds(med.timerRemaining);
+    readout.textContent = med.status === 'taken' ? 'TAKEN ✓' : formatSeconds(med.timerRemaining);
   }
 
   const badge = document.getElementById('timer-status-badge-text');
@@ -912,18 +806,19 @@ function updateCircleTimerDOM() {
       badge.textContent = 'Dose Guaranteed ✓';
     } else if (med.timerRemaining <= 0) {
       badge.textContent =
-        state.persona === 'kid' ? 'Timer Up • Worried → Angry!' : 'Timer Expired (00:00)!';
+        state.persona === 'kid' ? 'Timer Up • Worried → Angry!' : '10m Late • Angry Pill Box!';
     } else if (mood === 'worried' || mood === 'impatient') {
       badge.textContent =
-        state.persona === 'kid' ? 'Circle Low • Barnaby is Worried!' : 'Circle Timer Low • Hurry!';
+        state.persona === 'kid' ? '5m Late • Barnaby is Worried!' : '5m Late • Hurry Up!';
     } else {
-      badge.textContent = 'Circle Timer Active';
+      badge.textContent = 'First Ring • Calm Time-Box';
     }
   }
 
   const mascotStage = document.getElementById('mascot-stage');
   if (mascotStage) {
-    mascotStage.innerHTML = getCompanionSVG(state.persona, mood, 78);
+    const animClass = mood === 'calm' || mood === 'celebrating' ? 'mascot-calm' : 'mascot-impatient';
+    mascotStage.innerHTML = getCompanionArtworkHTML(state.persona, mood, animClass);
   }
 
   const speech = document.getElementById('companion-speech');
@@ -942,7 +837,7 @@ function renderVerificationSuiteHTML(prefix, med) {
     return `
       <div class="guarantee-box-header">
         <span class="guarantee-box-title">📦 Critical Refill Guarantee (${med.stockLeft} Left!)</span>
-        <button class="sim-btn" style="padding:2px 7px; font-size:11px;" onclick="quickVerifyAllSensors()">⚡ Instant Demo Check</button>
+        <button type="button" class="sim-btn" style="padding:2px 7px; font-size:11px;" onclick="quickVerifyAllSensors()">⚡ Instant Demo Check</button>
       </div>
       <div class="verification-modules-grid" style="grid-template-columns: 1fr;">
         <div class="verify-module-card ${v.pillPhotoScanned ? 'verified' : ''}">
@@ -951,10 +846,11 @@ function renderVerificationSuiteHTML(prefix, med) {
             <span class="module-status-tag">${v.pillPhotoScanned ? '✓ Verified' : 'Required'}</span>
           </div>
           <div class="scanner-preview-box">
+            <img src="${getAssetURI('icon_refill_alert')}" alt="Refill bottle" class="scanner-bg-art" />
             <video id="pill-scanner-video" class="scanner-video" playsinline muted></video>
-            ${v.pillScanningNow ? '<div class="scanner-laser"></div><span>Scanning Rx Bottle Barcode...</span>' : ''}
-            ${!v.pillScanningNow && v.pillPhotoScanned ? '<span>✅ Rx Refill Bottle Matched (99.8%)</span>' : ''}
-            ${!v.pillScanningNow && !v.pillPhotoScanned ? `<span>Point camera at ${med.name} bottle or pharmacy receipt</span>` : ''}
+            ${v.pillScanningNow ? '<div class="scanner-laser"></div><span class="scanner-overlay-badge">Scanning Rx Barcode...</span>' : ''}
+            ${!v.pillScanningNow && v.pillPhotoScanned ? '<span class="scanner-overlay-badge">✅ Rx Bottle Matched (99.8%)</span>' : ''}
+            ${!v.pillScanningNow && !v.pillPhotoScanned ? `<span class="scanner-overlay-badge">Scan ${med.name} Bottle</span>` : ''}
           </div>
           <button type="button" class="module-action-btn" onclick="startCameraSensorScan('pill')">
             ${v.pillPhotoScanned ? '✓ Rx Bottle Scanned' : '📷 Scan Refill Bottle / Rx'}
@@ -988,33 +884,32 @@ function renderVerificationSuiteHTML(prefix, med) {
 
   return `
     <div class="guarantee-box-header">
-      <span class="guarantee-box-title">
-        🛡️ Multi-Sensor Dose Guarantee
-      </span>
+      <span class="guarantee-box-title">🛡️ Multi-Sensor Dose Guarantee</span>
       <button type="button" class="sim-btn" style="padding:2px 7px; font-size:11px;" onclick="quickVerifyAllSensors()">
-        ⚡ Auto-Verify Sensors
+        ⚡ Auto-Verify All
       </button>
     </div>
 
     <div class="verification-modules-grid">
-      <!-- Sensor 1: Camera Pill / Cup Photo Verification -->
+      <!-- Sensor 1: Camera Pill / Cup Photo Verification with 3D Asset Preview -->
       <div class="verify-module-card ${v.pillPhotoScanned ? 'verified' : ''}">
         <div class="module-top">
           <span>📷 ${isKid ? 'Cup Scan' : 'Pill Scan'}</span>
           <span class="module-status-tag">${v.pillPhotoScanned ? '✓ 99% Match' : 'Step 1'}</span>
         </div>
         <div class="scanner-preview-box">
+          <img src="${getMedArtworkSrc(med)}" alt="${med.name}" class="scanner-bg-art" />
           <video id="pill-scanner-video" class="scanner-video" playsinline muted></video>
-          ${v.pillScanningNow ? '<div class="scanner-laser"></div><span>AI Matching Dose...</span>' : ''}
-          ${!v.pillScanningNow && v.pillPhotoScanned ? `<span>✅ ${med.icon} Dose Verified</span>` : ''}
-          ${!v.pillScanningNow && !v.pillPhotoScanned ? `<span>Scan ${med.dosage}</span>` : ''}
+          ${v.pillScanningNow ? '<div class="scanner-laser"></div><span class="scanner-overlay-badge">AI Matching...</span>' : ''}
+          ${!v.pillScanningNow && v.pillPhotoScanned ? `<span class="scanner-overlay-badge">✅ Dose Verified</span>` : ''}
+          ${!v.pillScanningNow && !v.pillPhotoScanned ? `<span class="scanner-overlay-badge">Camera Check</span>` : ''}
         </div>
         <button type="button" class="module-action-btn" onclick="startCameraSensorScan('pill')">
           ${v.pillPhotoScanned ? '✓ Dose Scanned' : '📷 Scan Medicine'}
         </button>
       </div>
 
-      <!-- Sensor 2: Child Face Scan (Kid Mode) OR Water Shake Gesture -->
+      <!-- Sensor 2: Child Face Scan (Kid Mode) OR Water Shake Gesture (Adult Mode) -->
       ${
         isKid
           ? `
@@ -1024,13 +919,14 @@ function renderVerificationSuiteHTML(prefix, med) {
             <span class="module-status-tag">${v.childFaceScanned ? '✓ Leo ID' : 'Step 2'}</span>
           </div>
           <div class="scanner-preview-box">
+            <img src="${getAssetURI('kid_calm')}" alt="Child Face Scan" class="scanner-bg-art" />
             <video id="face-scanner-video" class="scanner-video" playsinline muted></video>
-            ${v.faceScanningNow ? '<div class="scanner-laser"></div><span>Scanning Child Face...</span>' : ''}
-            ${!v.faceScanningNow && v.childFaceScanned ? '<span>✅ Leo (Age 8) Verified</span>' : ''}
-            ${!v.faceScanningNow && !v.childFaceScanned ? '<span>Child Face + Sip Check</span>' : ''}
+            ${v.faceScanningNow ? '<div class="scanner-laser"></div><span class="scanner-overlay-badge">Face Mesh...</span>' : ''}
+            ${!v.faceScanningNow && v.childFaceScanned ? '<span class="scanner-overlay-badge">✅ Leo Verified</span>' : ''}
+            ${!v.faceScanningNow && !v.childFaceScanned ? '<span class="scanner-overlay-badge">Child Face ID</span>' : ''}
           </div>
           <button type="button" class="module-action-btn" onclick="startCameraSensorScan('face')">
-            ${v.childFaceScanned ? '✓ Child Face Verified' : '👦 Scan Child Face'}
+            ${v.childFaceScanned ? '✓ Face Verified' : '👦 Scan Child Face'}
           </button>
         </div>
       `
@@ -1040,11 +936,9 @@ function renderVerificationSuiteHTML(prefix, med) {
             <span>📳 Water Shake</span>
             <span class="module-status-tag">${v.waterShakeProgress}%</span>
           </div>
-          <div class="scanner-preview-box" style="background: hsl(200, 65%, 18%); padding: 6px;">
-            <span>💧 Shake Phone with Water</span>
-            <div class="shake-meter-bar" style="margin-top:4px;">
-              <div class="shake-meter-fill" style="width:${v.waterShakeProgress}%;"></div>
-            </div>
+          <div class="scanner-preview-box">
+            <img src="${getAssetURI('icon_water_shield')}" alt="Water Shake" class="scanner-bg-art" />
+            <span class="scanner-overlay-badge">💧 ${v.waterShakeProgress}% Shaken</span>
           </div>
           <button type="button" class="module-action-btn" onclick="triggerWaterShakeStep()">
             ${v.waterShakeProgress >= 100 ? '✓ Water Shake Done' : '📳 Shake / Tap (+35%)'}
@@ -1057,7 +951,6 @@ function renderVerificationSuiteHTML(prefix, med) {
     ${
       isKid
         ? `
-      <!-- Kid Mode Row 2: Water Shake Gesture + Parent 4-Digit PIN -->
       <div class="verification-modules-grid">
         <div class="verify-module-card ${v.waterShakeProgress >= 100 ? 'verified' : ''}">
           <div class="module-top">
@@ -1137,87 +1030,104 @@ function renderVerificationSuiteHTML(prefix, med) {
 function renderTodayTab(med) {
   const meds = getCurrentMeds();
   const mood = getMoodForMed(med);
+  const animClass = mood === 'calm' || mood === 'celebrating' ? 'mascot-calm' : 'mascot-impatient';
 
   return `
+    <!-- Pillo.care Style Time-Box Alarm Card -->
     <section class="circle-timer-card" id="circle-timer-card" data-mood="${mood}">
-      <div class="timer-card-top">
+      <div class="pillo-alarm-banner">
         <span class="timer-status-badge">
           <span class="status-dot"></span>
-          <span id="timer-status-badge-text">Circle Timer Active</span>
+          <span id="timer-status-badge-text">First Ring • Calm Time-Box</span>
         </span>
-        <span class="active-med-pill-tag">${med.scheduledTime} • ${med.stockLeft} left</span>
+        <span class="active-med-pill-tag">🎵 Focus Music • ${med.scheduledTime}</span>
       </div>
 
+      <div class="pillo-time-heading">
+        <span class="pillo-time-kicker">
+          ${state.persona === 'kid' ? 'Hero Quest Reminder' : 'Pillo Time-Box Alarm'}
+        </span>
+        <h2 class="pillo-time-main">
+          ${state.persona === 'kid' ? 'Time for your Super-Shield!' : 'Time to take pills'}
+        </h2>
+      </div>
+
+      <!-- Circular Countdown Ring with 3D Pillo / Kid Buddy Inside -->
       <div class="circle-ring-wrapper">
-        <svg class="circle-ring-svg" viewBox="0 0 192 192">
-          <circle class="ring-track" cx="96" cy="96" r="80"></circle>
-          <circle class="ring-progress" id="ring-progress-circle" cx="96" cy="96" r="80"></circle>
+        <svg class="circle-ring-svg" viewBox="0 0 204 204">
+          <circle class="ring-track" cx="102" cy="102" r="86"></circle>
+          <circle class="ring-progress" id="ring-progress-circle" cx="102" cy="102" r="86"></circle>
         </svg>
         <div class="ring-center-content">
           <div class="mascot-stage" id="mascot-stage">
-            ${getCompanionSVG(state.persona, mood, 78)}
+            ${getCompanionArtworkHTML(state.persona, mood, animClass)}
           </div>
-          <div class="countdown-readout" id="countdown-readout">
-            ${med.status === 'taken' ? 'DONE' : formatSeconds(med.timerRemaining)}
-          </div>
-          <div class="countdown-caption">
-            ${med.status === 'taken' ? 'Verified Guarantee' : 'Circle Timer Window'}
+          <div class="countdown-pill-floating" id="countdown-readout">
+            ${med.status === 'taken' ? 'TAKEN ✓' : formatSeconds(med.timerRemaining)}
           </div>
         </div>
       </div>
 
-      <div class="active-dose-summary">
-        <h2 class="active-dose-title">${med.icon} ${med.name}</h2>
-        <p class="active-dose-meta">${med.dosage} • ${med.instructions}</p>
-        ${
-          med.snoozeReason
-            ? `<p class="active-dose-meta" style="color: var(--brand-secondary); font-weight: 700;">⏳ ${med.snoozeReason}</p>`
-            : ''
-        }
+      <!-- Active Medication 3D Spotlight Card -->
+      <div class="pillo-med-spotlight">
+        <img src="${getMedArtworkSrc(med)}" alt="${med.name}" class="spotlight-3d-thumb" />
+        <div class="spotlight-details">
+          <div class="spotlight-name">${med.name}</div>
+          <div class="spotlight-dosage">${med.dosage} • ${med.stockLeft} left in bottle</div>
+          ${
+            med.snoozeReason
+              ? `<div style="font-size:11px; color:var(--brand-secondary); font-weight:700;">⏳ ${med.snoozeReason}</div>`
+              : ''
+          }
+        </div>
       </div>
 
       <div class="companion-speech-bubble" id="companion-speech">
         ${getCompanionSpeechText(med, mood)}
       </div>
 
+      <!-- Pillo.care Signature 3-Button Action Dock ("Take now", "Reschedule", "Skip") -->
       ${
         med.status !== 'taken'
           ? `
-        <div class="timer-cta-row">
-          <button class="btn-primary-take" onclick="openCalmGuaranteeSheet()">
-            ✅ Verify &amp; Guarantee
+        <div class="pillo-action-dock">
+          <button type="button" class="btn-primary-take" onclick="openCalmGuaranteeSheet()">
+            ✓ Take now
           </button>
-          <button class="btn-secondary-snooze" onclick="applySmartSnooze('Eating Meal (+15m)', 45)">
-            ⏳ Snooze (${med.snoozeCount || 0}/2)
+          <button type="button" class="btn-secondary-snooze" onclick="applySmartSnooze('Rescheduled (+15m)', 45)">
+            Reschedule (${med.snoozeCount || 0}/2)
+          </button>
+          <button type="button" class="btn-secondary-snooze" onclick="simulateTimerState('expired')" title="Skipping without guarantee triggers Pillo's insistent lockdown!">
+            Skip?
           </button>
         </div>
       `
           : `
-        <div class="timer-cta-row" style="grid-template-columns: 1fr;">
-          <button class="btn-secondary-snooze" onclick="simulateTimerState('reset')">
-            🔄 Reset Dose Timer to Demo Again
+        <div class="pillo-action-dock" style="grid-template-columns: 1fr;">
+          <button type="button" class="btn-secondary-snooze" onclick="simulateTimerState('reset')">
+            🔄 Reset Time-Box Circle to Demo Again
           </button>
         </div>
       `
       }
 
-      <!-- Interactive Simulator Strip (Now with Critical Refill Alert & Timer Up!) -->
+      <!-- Interactive Simulator Strip -->
       <div class="simulator-bar">
         <div class="simulator-header">
-          <span>🧪 Test Specific Lockdown Situations:</span>
-          <span>${state.persona === 'kid' ? 'Worried → Angry' : 'Adult Mode'}</span>
+          <span>🧪 Preview Pillo 3D States &amp; Lockdowns:</span>
+          <span>${state.persona === 'kid' ? 'Worried → Angry' : 'Adult Pillo'}</span>
         </div>
         <div class="simulator-buttons">
-          <button class="sim-btn" onclick="simulateTimerState('reset')">
-            🟢 Calm Circle (45s)
+          <button type="button" class="sim-btn" onclick="simulateTimerState('reset')">
+            🟢 1st Ring: Calm (45s)
           </button>
-          <button class="sim-btn" onclick="simulateTimerState('low')">
-            🟡 ${state.persona === 'kid' ? 'Worried (10s)' : 'Low Timer (10s)'}
+          <button type="button" class="sim-btn" onclick="simulateTimerState('low')">
+            🟡 5m Late: ${state.persona === 'kid' ? 'Worried' : 'Surprised'} (10s)
           </button>
-          <button class="sim-btn sim-danger" onclick="simulateTimerState('expired')">
-            ${state.persona === 'kid' ? '😟➔😠 Timer Up (0s)' : '😡 Timer Up (0s)'}
+          <button type="button" class="sim-btn sim-danger" onclick="simulateTimerState('expired')">
+            😡 10m Late: Timer Up (0s)
           </button>
-          <button class="sim-btn sim-refill" onclick="simulateTimerState('critical-refill')">
+          <button type="button" class="sim-btn sim-refill" onclick="simulateTimerState('critical-refill')">
             🚨 Critical Refill (2 left)
           </button>
         </div>
@@ -1226,9 +1136,9 @@ function renderTodayTab(med) {
 
     <div class="section-header">
       <h3 class="section-title">
-        ${state.persona === 'kid' ? "Leo's Daily Quest Potions" : "Today's Medication Schedule"}
+        ${state.persona === 'kid' ? "Leo's Daily Quest Potions" : "Today's Medication List"}
       </h3>
-      <button class="section-action-btn" onclick="openAddMedSheet()">+ Add Medicine</button>
+      <button type="button" class="section-action-btn" onclick="openAddMedSheet()">+ Add Medicine</button>
     </div>
 
     <div class="med-list">
@@ -1236,28 +1146,30 @@ function renderTodayTab(med) {
         .map((item) => {
           const isSelected = item.id === med.id;
           const isCritStock = item.stockLeft <= item.criticalRefillThreshold;
-          let statusLabel = 'Circle Active';
+          let statusLabel = 'Time-Box Active';
           let statusClass = 'status-pending';
           if (item.status === 'taken') {
             statusLabel = 'Guaranteed ✓';
             statusClass = 'status-guaranteed';
           } else if (item.timerRemaining <= 0) {
-            statusLabel = state.persona === 'kid' ? 'Worried → Angry!' : 'Timer Up! 😡';
+            statusLabel = state.persona === 'kid' ? 'Worried → Angry!' : 'Angry Alarm! 😡';
             statusClass = 'status-overdue';
           }
           return `
             <div class="med-card ${isSelected ? 'active-selected' : ''} ${item.status === 'taken' ? 'med-taken' : ''}"
                  onclick="selectMedication('${item.id}')">
               <div class="med-left">
-                <div class="med-icon-box">${item.icon}</div>
+                <div class="med-3d-icon-box">
+                  <img src="${getMedArtworkSrc(item)}" alt="${item.name}" />
+                </div>
                 <div>
                   <div class="med-name">${item.name}</div>
                   <div class="med-sub">
                     <span>${item.dosage}</span>
                     ${
                       isCritStock
-                        ? `<span style="color: var(--timer-expired); font-weight:800;"> • 🚨 CRITICAL (${item.stockLeft} left)</span>`
-                        : `<span> • ${item.stockLeft} in bottle</span>`
+                        ? `<span style="color: var(--timer-expired); font-weight:800;"> • 🚨 2 LEFT REFILL ALERT</span>`
+                        : `<span> • ${item.stockLeft} left</span>`
                     }
                   </div>
                 </div>
@@ -1275,26 +1187,27 @@ function renderTodayTab(med) {
 }
 
 function renderLogTab() {
+  const heroArt = state.persona === 'kid' ? getAssetURI('kid_calm') : getAssetURI('adult_celebrating');
   return `
-    <div class="circle-timer-card" style="align-items: flex-start; text-align: left;">
-      <div class="timer-card-top">
-        <span class="timer-status-badge">🛡️ Multi-Modal Guarantee Audit</span>
-        <span class="active-med-pill-tag">100% Verified</span>
+    <div class="circle-timer-card" style="flex-direction: row; text-align: left; gap: 12px;">
+      <img src="${heroArt}" alt="Celebrating Mascot" style="width: 76px; height: 76px; border-radius: 18px; object-fit: contain; flex-shrink: 0;" />
+      <div>
+        <span class="timer-status-badge" style="margin-bottom: 4px;">🛡️ Pillo Hearts &amp; Streak</span>
+        <h2 class="active-dose-title" style="font-size: 16px;">
+          ${state.persona === 'kid' ? `🌟 ${state.streakCount} Hero Stars Earned!` : `🔥 ${state.streakCount}-Day Streak • ❤️ ${state.charityHearts} Hearts`}
+        </h2>
+        <p class="active-dose-meta">
+          ${
+            state.persona === 'kid'
+              ? 'Verified with Child Face Scan, Medicine Cup Scan, Water Shake & Parent PIN!'
+              : 'Taking all daily meds on time earns Heart Points donated to medical charities.'
+          }
+        </p>
       </div>
-      <h2 class="active-dose-title">
-        ${state.persona === 'kid' ? `🌟 ${state.streakCount} Hero Star Stickers Earned!` : `🔥 ${state.streakCount}-Day Verified Streak`}
-      </h2>
-      <p class="active-dose-meta">
-        ${
-          state.persona === 'kid'
-            ? 'Every dose is verified with Child Face Scan, Medicine Cup Scan, Water Shake, and Parent PIN!'
-            : `Every dose is verified with AI Pill Photo Scan, Water Shake Accelerometer, and a 3-Second Hold Guarantee.`
-        }
-      </p>
     </div>
 
     <div class="section-header">
-      <h3 class="section-title">Verified Guarantee Log</h3>
+      <h3 class="section-title">Timestamped Dose Guarantee Log</h3>
     </div>
 
     <div class="med-list">
@@ -1303,7 +1216,9 @@ function renderLogTab() {
           (entry) => `
         <div class="med-card">
           <div class="med-left">
-            <div class="med-icon-box">${entry.wasOverdue ? '🚨' : '✅'}</div>
+            <div class="med-3d-icon-box">
+              <img src="${getAssetURI('icon_water_shield')}" alt="Verified Shield" />
+            </div>
             <div>
               <div class="med-name">${entry.medName} (${entry.dosage})</div>
               <div class="med-sub">${entry.method}</div>
@@ -1311,7 +1226,7 @@ function renderLogTab() {
           </div>
           <div class="med-right">
             <span class="med-time-badge">${entry.timestamp}</span>
-            <span class="med-status-pill status-guaranteed">Verified</span>
+            <span class="med-status-pill status-guaranteed">Guaranteed</span>
           </div>
         </div>
       `
@@ -1325,8 +1240,8 @@ function renderCabinetTab() {
   const meds = getCurrentMeds();
   return `
     <div class="section-header">
-      <h3 class="section-title">Pill Cabinet &amp; Critical Refill Alerts</h3>
-      <button class="section-action-btn" onclick="openAddMedSheet()">+ Add New</button>
+      <h3 class="section-title">Med Cabinet &amp; Refill Stock Widget</h3>
+      <button type="button" class="section-action-btn" onclick="openAddMedSheet()">+ Add New</button>
     </div>
 
     <div class="med-list">
@@ -1336,18 +1251,20 @@ function renderCabinetTab() {
           return `
             <div class="med-card" onclick="selectMedication('${m.id}')">
               <div class="med-left">
-                <div class="med-icon-box">${m.icon}</div>
+                <div class="med-3d-icon-box">
+                  <img src="${isCrit ? getAssetURI('icon_refill_alert') : getMedArtworkSrc(m)}" alt="${m.name}" />
+                </div>
                 <div>
                   <div class="med-name">${m.name}</div>
                   <div class="med-sub">
-                    ${isCrit ? `<strong style="color:var(--timer-expired);">🚨 CRITICAL STOCK (${m.stockLeft} left)</strong>` : `${m.stockLeft} doses remaining`}
+                    ${isCrit ? `<strong style="color:var(--timer-expired);">🚨 CRITICAL: ${m.stockLeft} LEFT (REFILL ALERT)</strong>` : `${m.stockLeft} pills in stock`}
                   </div>
                 </div>
               </div>
               <div class="med-right">
-                <button class="sim-btn ${isCrit ? 'sim-danger' : ''}" style="padding:4px 8px; font-size:11px;"
+                <button type="button" class="sim-btn ${isCrit ? 'sim-danger' : ''}" style="padding:4px 8px; font-size:11px;"
                         onclick="event.stopPropagation(); state.selectedMedId='${m.id}'; simulateTimerState('critical-refill')">
-                  🚨 Trigger Refill Lock
+                  🚨 Refill Lock
                 </button>
               </div>
             </div>
@@ -1357,7 +1274,7 @@ function renderCabinetTab() {
     </div>
 
     <div class="section-header" style="margin-top: 6px;">
-      <h3 class="section-title">Caregiver &amp; Smart Safety Rules</h3>
+      <h3 class="section-title">Pillo Smart Handling &amp; Caregiver Safety</h3>
     </div>
 
     <div class="circle-timer-card" style="align-items: stretch; gap: 8px;">
@@ -1366,11 +1283,11 @@ function renderCabinetTab() {
         <strong style="font-family:var(--font-mono);">${state.parentPinCode}</strong>
       </label>
       <label class="check-row" style="justify-content: space-between;">
-        <span>🚗 Auto-Snooze While Driving (&gt;15 mph)</span>
+        <span>🚗 Driving Safety Mode (&gt;15 mph Auto-Snooze)</span>
         <input type="checkbox" ${state.smartDrivingSnooze ? 'checked' : ''} onchange="state.smartDrivingSnooze = this.checked" />
       </label>
       <label class="check-row" style="justify-content: space-between;">
-        <span>📞 Pause Alarm During Active Phone Calls</span>
+        <span>📞 Active Phone Call Auto-Pause</span>
         <input type="checkbox" ${state.smartCallPause ? 'checked' : ''} onchange="state.smartCallPause = this.checked" />
       </label>
     </div>
@@ -1378,7 +1295,7 @@ function renderCabinetTab() {
 }
 
 /* ==========================================================================
-   Persistent Lockdown Overlay (Worried -> Angry in Kid Mode + All Triggers)
+   Persistent Lockdown Overlay (With 3D Pillo Angry Pill Box & Kid Progression)
    ========================================================================== */
 
 function renderAngryLockdownOverlay(med) {
@@ -1395,47 +1312,45 @@ function renderAngryLockdownOverlay(med) {
   overlay.setAttribute('data-kid-stage', currentMood);
   overlay.classList.add('active');
 
-  // Determine situation headline & copy
   let situationBadge = '🚨 Circle Timer Expired (00:00)';
   let headlineText = '';
   let subcopyText = '';
 
   if (state.lockdownReason === 'critical-refill') {
-    situationBadge = `🚨 CRITICAL REFILL ALERT (${med.stockLeft} Doses Left!)`;
+    situationBadge = `🚨 CRITICAL REFILL ALERT (${med.stockLeft} LEFT!)`;
     if (isKid) {
       headlineText =
         currentMood === 'worried'
-          ? `😟 Barnaby is Worried! ${med.name} is Almost Empty!`
+          ? `😟 Barnaby is Worried! ${med.name} Only Has ${med.stockLeft} Left!`
           : currentMood === 'worried-angry'
-          ? `😣 Barnaby is Getting Upset! Only ${med.stockLeft} Doses Left!`
+          ? `😣 Barnaby is Getting Upset! Refill ${med.name} Soon!`
           : `😠 BARNABY IS GRUMPY! Refill ${med.name} Right Now!`;
-      subcopyText = `This alert will NOT leave your screen until a parent scans the refill bottle & guarantees the restock!`;
+      subcopyText = `This alert stays locked on screen until a parent scans the Rx bottle & guarantees the refill!`;
     } else {
       headlineText = `😡 CRITICAL REFILL LOCKDOWN: ${med.name} (${med.stockLeft} Left)!`;
-      subcopyText = `You are about to run out of ${med.name}. This angry alert will not leave your screen until you scan & guarantee your refill.`;
+      subcopyText = `The Angry Pill Box will not leave your screen until you scan & guarantee your prescription refill.`;
     }
   } else if (state.lockdownReason === 'max-snooze') {
-    situationBadge = `🚨 Max Snooze Limit Reached (2/2 Snoozes Used)`;
+    situationBadge = `🚨 Max Reschedule Limit (2/2 Used)`;
     headlineText = isKid
-      ? `😣 No More Snoozing, Leo! Barnaby Went From Worried to Grumpy!`
-      : `😡 Enough Snoozing! Take ${med.name} Right Now!`;
-    subcopyText = `You already snoozed twice. Complete the multi-sensor guarantee below to unlock your phone.`;
+      ? `😣 No More Rescheduling, Leo! Barnaby Went From Worried to Grumpy!`
+      : `😡 Enough Procrastinating! Take ${med.name} Now!`;
+    subcopyText = `You already rescheduled twice. Complete the multi-sensor guarantee below to unlock your phone.`;
   } else {
-    // Timer Expired (00:00)
     if (isKid) {
       if (currentMood === 'worried') {
         headlineText = `😟 Oh No Leo! The Circle Timer Ran Out & Barnaby is Worried!`;
-        subcopyText = `Barnaby starts worried when the timer hits 00:00 — and gets angrier if you wait! Complete your Face Scan & Guarantee now!`;
+        subcopyText = `In Kid Mode, Barnaby starts worried when the timer hits 00:00 — and turns angry if ignored!`;
       } else if (currentMood === 'worried-angry') {
-        headlineText = `😣 Barnaby is Going from Worried to Angry! Take ${med.name}!`;
+        headlineText = `😣 Barnaby is Turning From Worried to Angry! Take ${med.name}!`;
         subcopyText = `Don't let Barnaby reach full Grumpy-Angry! Scan your face & medicine cup below!`;
       } else {
-        headlineText = `😠 BARNABY IS FULL GRUMPY-ANGRY! You Still Haven't Guaranteed ${med.name}!`;
+        headlineText = `😠 BARNABY IS FULL GRUMPY-ANGRY! Guarantee ${med.name} Now!`;
         subcopyText = `My grumpy face is locked to your screen until you complete the Child Face Scan, Water Shake, & Parent PIN!`;
       }
     } else {
-      headlineText = `😡 HEY! The Circle Timer Hit 00:00 for ${med.name}!`;
-      subcopyText = `This angry face will NOT leave your screen until you complete the Pill Photo Scan, Water Shake, and 3s Hold Guarantee.`;
+      headlineText = `😡 THE ANGRY PILL BOX: Timer Hit 00:00 for ${med.name}!`;
+      subcopyText = `This persistent alarm will NOT leave your screen until you complete the Pill Photo Scan, Water Shake, and 3s Hold Guarantee.`;
     }
   }
 
@@ -1444,24 +1359,23 @@ function renderAngryLockdownOverlay(med) {
       ? `🚫 Dismissal Blocked (#${state.dismissAttemptsBlocked})! ${
           isKid
             ? 'Trying to close the screen makes Barnaby go from Worried to Angry faster!'
-            : 'Swiping or tapping X will never close this screen. Complete the guarantee below!'
+            : 'Swiping away is disabled. Complete the Dose Guarantee below!'
         }`
       : isKid
-      ? `💡 Kid Mode Progression: Barnaby starts 😟 Worried and escalates to 😠 Angry until verified!`
+      ? `💡 Tap the stages below (or wait) to see Barnaby transition: 😟 Worried ➔ 😣 Upset ➔ 😠 Angry`
       : `🔒 Persistent Screen Lock Active — Complete all verification sensors below to dismiss.`;
 
   overlay.innerHTML = `
     <div class="lockdown-top-bar">
       <span class="lockdown-alert-pill">${situationBadge}</span>
       <button type="button" class="fake-dismiss-btn" onclick="triggerAngryReject()">
-        ✕ Try to Dismiss
+        ✕ Try to Swipe Away
       </button>
     </div>
 
     ${
       isKid
         ? `
-      <!-- Interactive Worried -> Worried-Angry -> Angry Escalation Bar for Kid Mode -->
       <div class="kid-mood-stepper">
         <button type="button" class="kid-stage-chip ${currentMood === 'worried' ? 'active' : ''}" onclick="setKidLockdownStage('worried')">
           😟 1. Worried
@@ -1478,8 +1392,15 @@ function renderAngryLockdownOverlay(med) {
     }
 
     <div class="angry-face-hero" onclick="triggerAngryReject()">
-      <div class="angry-svg-container">
-        ${getCompanionSVG(state.persona, currentMood, 102)}
+      <div class="lockdown-3d-portrait-row">
+        <div class="angry-svg-container">
+          ${getCompanionArtworkHTML(state.persona, currentMood, '')}
+        </div>
+        ${
+          state.lockdownReason === 'critical-refill'
+            ? `<img src="${getAssetURI('icon_refill_alert')}" alt="2 Left Refill Alert" class="refill-side-badge-img" />`
+            : ''
+        }
       </div>
       <h2 class="angry-headline">${headlineText}</h2>
       <p class="angry-subcopy">${subcopyText}</p>
@@ -1495,11 +1416,11 @@ function renderAngryLockdownOverlay(med) {
         state.lockdownReason !== 'critical-refill'
           ? `
         <div class="lockdown-snooze-row">
-          <button type="button" class="lockdown-snooze-btn" onclick="applySmartSnooze('Eating Meal First (+15m)', 45)">
-            🍽️ Eating (15m)
+          <button type="button" class="lockdown-snooze-btn" onclick="applySmartSnooze('After Meal (+15m)', 45)">
+            🍽️ After Meal (15m)
           </button>
-          <button type="button" class="lockdown-snooze-btn" onclick="applySmartSnooze('Driving Safety Mode', 60)">
-            🚗 Driving
+          <button type="button" class="lockdown-snooze-btn" onclick="applySmartSnooze('Driving (>15 mph)', 60)">
+            🚗 Driving Mode
           </button>
           <button type="button" class="lockdown-snooze-btn" onclick="applySmartSnooze('Arrive Home', 60)">
             🏠 At Home
@@ -1549,11 +1470,11 @@ function renderBottomSheet(med) {
   if (activeSheetMode === 'calm-guarantee' && med) {
     container.innerHTML = `
       <div class="sheet-header">
-        <h3 class="sheet-title">✅ Guarantee ${med.name}</h3>
+        <h3 class="sheet-title">✅ Take Now &amp; Guarantee ${med.name}</h3>
         <button type="button" class="sheet-close" onclick="closeBottomSheet()">✕</button>
       </div>
       <p style="font-size: 12px; color: var(--text-secondary);">
-        You beat the Circle Timer (${med.timerRemaining}s left)! Complete the sensor verification below:
+        You responded before the Time-Box ran out (${med.timerRemaining}s left)! Complete the sensor verification below:
       </p>
       ${renderVerificationSuiteHTML('calm', med)}
     `;
@@ -1574,10 +1495,10 @@ function renderBottomSheet(med) {
         </div>
         <div class="form-group">
           <label>Visual Guarantee Description</label>
-          <input id="new-med-visual" class="form-input" required placeholder="e.g., 1 Purple Cup + Sip of Water" />
+          <input id="new-med-visual" class="form-input" required placeholder="e.g., 1 Cup + Sip of Water" />
         </div>
         <button type="submit" class="btn-primary-take" style="width:100%;">
-          Save &amp; Start Circle Timer
+          Save &amp; Start Time-Box Circle
         </button>
       </form>
     `;
@@ -1596,9 +1517,9 @@ function handleAddMedication(e) {
     name,
     dosage,
     visualDesc,
-    instructions: 'Protected by Circle Timer & Multi-Modal Guarantee',
+    instructions: 'Protected by Pillo Time-Box & Multi-Modal Guarantee',
     scheduledTime: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-    icon: state.persona === 'kid' ? '🦸' : '💊',
+    assetKey: state.persona === 'kid' ? 'icon_kid_meds' : 'icon_adult_pills',
     stockLeft: 15,
     refillThreshold: 5,
     criticalRefillThreshold: 2,
@@ -1662,14 +1583,20 @@ function toggleSound() {
 function renderAll() {
   document.documentElement.setAttribute('data-persona', state.persona);
 
+  const headerAvatar = document.getElementById('header-mascot-avatar');
+  if (headerAvatar) {
+    const avatarSrc = getAssetURI(state.persona === 'kid' ? 'kid_calm' : 'adult_calm');
+    headerAvatar.innerHTML = `<img src="${avatarSrc}" alt="Mascot Avatar" />`;
+  }
+
   const titleEl = document.getElementById('app-main-title');
   const subEl = document.getElementById('app-main-subtitle');
   if (titleEl && subEl) {
-    titleEl.textContent = state.persona === 'adult' ? 'PillPal Care' : 'PillPal Hero';
+    titleEl.textContent = state.persona === 'adult' ? 'Pillo Care+' : 'Pillo Kids Hero';
     subEl.textContent =
       state.persona === 'adult'
-        ? 'Alex (Adult) • Pill Scan + Shake Guarantee'
-        : 'Leo, Age 8 (Kid) • Face Scan + Worried→Angry';
+        ? 'The Angry Pill Box • Adult Mode'
+        : 'Leo, Age 8 • Worried → Angry Buddy';
   }
 
   document.getElementById('btn-persona-adult')?.classList.toggle('active', state.persona === 'adult');

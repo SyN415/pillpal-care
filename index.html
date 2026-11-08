@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>PillPal Care — Adult &amp; Kid-Friendly Mobile Medication Companion</title>
-  <meta name="description" content="Restyled mobile medication reminder inspired by pillo.care with Circle Timer countdowns, conditional Angry Face screen lock when the timer expires, and a 2-step Dose Guarantee." />
+  <meta name="description" content="Restyled mobile medication reminder inspired by pillo.care with 3D Pillo characters, Circle Timer countdowns, Worried-to-Angry Kid Mode progression, and Multi-Sensor Dose Guarantee." />
   <meta name="theme-color" content="#16382C" />
   <link rel="manifest" href="./manifest.json" />
   <link rel="stylesheet" href="./styles.css" />
@@ -35,10 +35,10 @@
       <header class="app-header">
         <div class="header-top-row">
           <div class="brand-cluster">
-            <div class="brand-logo-badge" aria-hidden="true">P</div>
+            <div class="brand-logo-badge" id="header-mascot-avatar" aria-hidden="true">P</div>
             <div class="brand-titles">
               <h1 id="app-main-title">PillPal Care</h1>
-              <div class="brand-subtitle" id="app-main-subtitle">Alex (Adult Mode) • Persistent Adherence</div>
+              <div class="brand-subtitle" id="app-main-subtitle">Alex (Adult) • Pill Scan + Shake Guarantee</div>
             </div>
           </div>
 
@@ -58,7 +58,7 @@
             type="button"
             onclick="switchPersona('adult')"
           >
-            🧑 Adult Mode (Alex)
+            🧑 Adult Mode (Pillo Box)
           </button>
           <button
             id="btn-persona-kid"
@@ -66,7 +66,7 @@
             type="button"
             onclick="switchPersona('kid')"
           >
-            🧒 Kid Mode (Leo, 8)
+            🧒 Kid Mode (Worried→Angry)
           </button>
         </div>
       </header>
@@ -78,20 +78,20 @@
       <nav class="phone-tab-bar" aria-label="Primary Bottom Navigation">
         <button class="tab-item active" data-tab="today" type="button" onclick="switchTab('today')">
           <span class="tab-icon">⏱️</span>
-          <span>Circle Timer</span>
+          <span>Time-Box</span>
         </button>
         <button class="tab-item" data-tab="log" type="button" onclick="switchTab('log')">
           <span class="tab-icon">🛡️</span>
           <span>Guarantee Log</span>
         </button>
         <button class="tab-item" data-tab="cabinet" type="button" onclick="switchTab('cabinet')">
-          <span class="tab-icon">🧰</span>
-          <span>Cabinet &amp; Family</span>
+          <span class="tab-icon">💊</span>
+          <span>Med Cabinet</span>
         </button>
       </nav>
 
-      <!-- PERSISTENT ANGRY FACE SCREEN LOCKDOWN OVERLAY -->
-      <!-- Appears ONLY when the Circle Timer hits 00:00 and the medication was not taken -->
+      <!-- PERSISTENT LOCKDOWN OVERLAY -->
+      <!-- Appears ONLY when the Circle Timer hits 00:00, Critical Refill (<=2 left), or Max Snooze -->
       <section
         class="angry-lockdown-overlay"
         id="angry-lockdown-overlay"
@@ -107,6 +107,7 @@
     </div>
   </div>
 
+  <script src="./assets.js"></script>
   <script src="./app.js"></script>
 </body>
 </html>

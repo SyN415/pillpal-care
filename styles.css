@@ -1,7 +1,5 @@
 /* ==========================================================================
-   PillPal Care — Mobile Design System (Adult & Kid-Friendly Dual Theme)
-   Iteration 2: Multi-Modal Guarantee (Face Scan, Pill Camera, Shake Gesture,
-   Parent PIN), Kid Mode Worried-to-Angry Progression, & Critical Refill Alert
+   PillPal Care — Pillo.care Inspired 3D Graphic Design System (Iteration 3)
    ========================================================================== */
 
 :root {
@@ -9,65 +7,66 @@
   --font-display: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
-  --bg-outer: hsl(38, 24%, 90%);
-  --bg-app: hsl(40, 33%, 96%);
+  /* Pillo.care Signature Mint-Teal, Warm Cream, & Coral-Red Palette */
+  --bg-outer: hsl(165, 22%, 90%);
+  --bg-app: hsl(160, 28%, 97%);
   --bg-surface: hsl(0, 0%, 100%);
-  --bg-elevated: hsl(38, 28%, 93%);
-  --bg-subtle: hsl(156, 22%, 93%);
+  --bg-elevated: hsl(162, 24%, 93%);
+  --bg-subtle: hsl(162, 48%, 92%);
 
-  --text-primary: hsl(160, 32%, 12%);
-  --text-secondary: hsl(160, 14%, 34%);
-  --text-muted: hsl(160, 10%, 50%);
-  --text-on-accent: hsl(40, 33%, 98%);
+  --text-primary: hsl(166, 42%, 12%);
+  --text-secondary: hsl(166, 18%, 34%);
+  --text-muted: hsl(166, 12%, 50%);
+  --text-on-accent: hsl(0, 0%, 100%);
 
-  --brand-primary: hsl(158, 48%, 22%);
-  --brand-primary-hover: hsl(158, 52%, 17%);
-  --brand-secondary: hsl(16, 76%, 52%);
-  --brand-warm: hsl(40, 88%, 56%);
+  --brand-primary: hsl(162, 68%, 32%);
+  --brand-primary-hover: hsl(162, 72%, 25%);
+  --brand-secondary: hsl(16, 84%, 54%);
+  --brand-warm: hsl(38, 92%, 52%);
 
-  --timer-calm: hsl(156, 62%, 34%);
-  --timer-warn: hsl(32, 86%, 48%);
-  --timer-expired: hsl(0, 76%, 48%);
+  --timer-calm: hsl(160, 72%, 38%);
+  --timer-warn: hsl(34, 94%, 50%);
+  --timer-expired: hsl(356, 82%, 52%);
 
-  --border-subtle: hsl(38, 18%, 85%);
-  --border-strong: hsl(160, 20%, 75%);
+  --border-subtle: hsl(162, 22%, 86%);
+  --border-strong: hsl(162, 28%, 74%);
 
-  --radius-sm: 10px;
-  --radius-md: 16px;
-  --radius-lg: 22px;
+  --radius-sm: 12px;
+  --radius-md: 18px;
+  --radius-lg: 26px;
   --radius-pill: 9999px;
 
-  --shadow-card: 0 2px 8px hsla(160, 30%, 12%, 0.05), 0 1px 2px hsla(160, 30%, 12%, 0.04);
-  --shadow-float: 0 12px 28px hsla(160, 30%, 12%, 0.12);
+  --shadow-card: 0 6px 20px hsla(166, 40%, 12%, 0.06), 0 1px 3px hsla(166, 40%, 12%, 0.04);
+  --shadow-float: 0 16px 36px hsla(166, 40%, 12%, 0.16);
 }
 
 [data-persona="kid"] {
-  --bg-outer: hsl(44, 65%, 90%);
-  --bg-app: hsl(46, 85%, 97%);
+  --bg-outer: hsl(208, 55%, 90%);
+  --bg-app: hsl(205, 75%, 97%);
   --bg-surface: hsl(0, 0%, 100%);
-  --bg-elevated: hsl(45, 70%, 92%);
-  --bg-subtle: hsl(194, 75%, 93%);
+  --bg-elevated: hsl(208, 58%, 92%);
+  --bg-subtle: hsl(44, 92%, 90%);
 
-  --text-primary: hsl(224, 42%, 16%);
-  --text-secondary: hsl(224, 22%, 34%);
-  --text-muted: hsl(224, 15%, 50%);
+  --text-primary: hsl(224, 46%, 15%);
+  --text-secondary: hsl(224, 24%, 35%);
+  --text-muted: hsl(224, 16%, 52%);
   --text-on-accent: hsl(0, 0%, 100%);
 
-  --brand-primary: hsl(216, 82%, 46%);
-  --brand-primary-hover: hsl(216, 85%, 38%);
-  --brand-secondary: hsl(18, 92%, 56%);
-  --brand-warm: hsl(44, 96%, 54%);
+  --brand-primary: hsl(212, 86%, 48%);
+  --brand-primary-hover: hsl(212, 88%, 40%);
+  --brand-secondary: hsl(24, 95%, 54%);
+  --brand-warm: hsl(44, 96%, 52%);
 
-  --timer-calm: hsl(164, 78%, 36%);
-  --timer-warn: hsl(34, 95%, 50%);
-  --timer-expired: hsl(354, 82%, 52%);
+  --timer-calm: hsl(198, 86%, 46%);
+  --timer-warn: hsl(232, 72%, 58%);
+  --timer-expired: hsl(354, 84%, 54%);
 
-  --border-subtle: hsl(44, 42%, 83%);
-  --border-strong: hsl(216, 45%, 72%);
+  --border-subtle: hsl(208, 42%, 85%);
+  --border-strong: hsl(212, 48%, 74%);
 
   --radius-sm: 14px;
   --radius-md: 20px;
-  --radius-lg: 26px;
+  --radius-lg: 28px;
 }
 
 * {
@@ -86,30 +85,26 @@ html, body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* ==========================================================================
-   Mobile Phone Viewport Container
-   ========================================================================== */
-
 .workspace-wrapper {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 14px 10px;
+  padding: 12px 10px;
 }
 
 .phone-device {
   width: 100%;
-  max-width: 416px;
-  height: 856px;
-  max-height: 95vh;
+  max-width: 418px;
+  height: 862px;
+  max-height: 96vh;
   background: var(--bg-app);
   border-radius: 44px;
-  border: 10px solid hsl(160, 20%, 12%);
+  border: 10px solid hsl(166, 28%, 12%);
   box-shadow:
-    0 24px 60px hsla(160, 30%, 8%, 0.24),
-    0 0 0 2px hsla(0, 0%, 100%, 0.4) inset;
+    0 26px 64px hsla(166, 36%, 8%, 0.26),
+    0 0 0 2px hsla(0, 0%, 100%, 0.45) inset;
   position: relative;
   overflow: hidden;
   display: flex;
@@ -118,7 +113,7 @@ html, body {
 }
 
 [data-persona="kid"] .phone-device {
-  border-color: hsl(224, 38%, 18%);
+  border-color: hsl(224, 42%, 17%);
 }
 
 @media (max-width: 480px) {
@@ -137,7 +132,7 @@ html, body {
 
 /* Status Bar & Dynamic Island */
 .phone-status-bar {
-  height: 42px;
+  height: 40px;
   padding: 8px 22px 4px;
   display: flex;
   align-items: center;
@@ -151,9 +146,9 @@ html, body {
 }
 
 .dynamic-island {
-  width: 112px;
+  width: 116px;
   height: 24px;
-  background: hsl(160, 20%, 10%);
+  background: hsl(166, 28%, 10%);
   border-radius: 999px;
   display: flex;
   align-items: center;
@@ -165,13 +160,13 @@ html, body {
 }
 
 .dynamic-island.island-alert {
-  width: 168px;
+  width: 170px;
   background: var(--timer-expired);
 }
 
 .dynamic-island.island-worried {
-  width: 168px;
-  background: hsl(28, 90%, 44%);
+  width: 170px;
+  background: hsl(234, 68%, 54%);
 }
 
 .island-dot {
@@ -194,7 +189,7 @@ html, body {
 }
 
 /* ==========================================================================
-   Top App Header & Persona Switcher
+   Header & Persona Switcher
    ========================================================================== */
 
 .app-header {
@@ -203,7 +198,7 @@ html, body {
   flex-direction: column;
   gap: 8px;
   border-bottom: 1px solid var(--border-subtle);
-  background: var(--bg-app);
+  background: var(--bg-surface);
   flex-shrink: 0;
 }
 
@@ -221,16 +216,22 @@ html, body {
 }
 
 .brand-logo-badge {
-  width: 34px;
-  height: 34px;
-  border-radius: var(--radius-sm);
-  background: var(--brand-primary);
-  color: var(--text-on-accent);
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  background: #fff;
+  border: 1.5px solid var(--border-subtle);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 800;
-  font-size: 16px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px hsla(0, 0%, 0%, 0.08);
+}
+
+.brand-logo-badge img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .brand-titles h1 {
@@ -244,7 +245,7 @@ html, body {
 .brand-subtitle {
   font-size: 12px;
   color: var(--text-secondary);
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .header-actions {
@@ -255,7 +256,7 @@ html, body {
 
 .icon-btn {
   border: 1px solid var(--border-subtle);
-  background: var(--bg-surface);
+  background: var(--bg-app);
   color: var(--text-primary);
   height: 32px;
   padding: 0 9px;
@@ -307,7 +308,7 @@ html, body {
 }
 
 /* ==========================================================================
-   Main Scrollable Phone Content
+   Main Scrollable Content & Pillo Time-Box Hero Card
    ========================================================================== */
 
 .phone-main {
@@ -319,22 +320,9 @@ html, body {
   gap: 12px;
 }
 
-.phone-main::-webkit-scrollbar {
-  width: 4px;
-}
-
-.phone-main::-webkit-scrollbar-thumb {
-  background: var(--border-strong);
-  border-radius: 4px;
-}
-
-/* ==========================================================================
-   Hero Circle Timer Card ("Time-Box" Countdown + Companion Character)
-   ========================================================================== */
-
 .circle-timer-card {
   background: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
+  border: 1.5px solid var(--border-subtle);
   border-radius: var(--radius-lg);
   padding: 14px;
   box-shadow: var(--shadow-card);
@@ -342,26 +330,27 @@ html, body {
   flex-direction: column;
   align-items: center;
   gap: 10px;
-  transition: border-color 0.3s ease, background-color 0.3s ease;
+  position: relative;
+  overflow: hidden;
 }
 
 .circle-timer-card[data-mood="impatient"],
 .circle-timer-card[data-mood="worried"] {
   border-color: var(--timer-warn);
-  background: linear-gradient(180deg, hsla(34, 95%, 50%, 0.08) 0%, var(--bg-surface) 100%);
+  background: linear-gradient(180deg, hsla(38, 95%, 54%, 0.09) 0%, var(--bg-surface) 100%);
 }
 
 .circle-timer-card[data-mood="angry"] {
   border-color: var(--timer-expired);
-  background: linear-gradient(180deg, hsla(0, 82%, 52%, 0.1) 0%, var(--bg-surface) 100%);
+  background: linear-gradient(180deg, hsla(356, 85%, 52%, 0.12) 0%, var(--bg-surface) 100%);
 }
 
-.timer-card-top {
+.pillo-alarm-banner {
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
+  gap: 6px;
 }
 
 .timer-status-badge {
@@ -371,19 +360,19 @@ html, body {
   padding: 4px 10px;
   border-radius: var(--radius-pill);
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 800;
   background: var(--bg-subtle);
-  color: var(--timer-calm);
+  color: var(--brand-primary);
 }
 
 .circle-timer-card[data-mood="impatient"] .timer-status-badge,
 .circle-timer-card[data-mood="worried"] .timer-status-badge {
-  background: hsla(34, 95%, 50%, 0.16);
-  color: hsl(28, 90%, 34%);
+  background: hsla(34, 95%, 50%, 0.18);
+  color: hsl(26, 90%, 34%);
 }
 
 .circle-timer-card[data-mood="angry"] .timer-status-badge {
-  background: hsla(0, 80%, 50%, 0.16);
+  background: hsla(0, 84%, 52%, 0.18);
   color: var(--timer-expired);
 }
 
@@ -403,31 +392,55 @@ html, body {
   border-radius: var(--radius-pill);
 }
 
+/* Pillo "Time to take pills" Header inside Card */
+.pillo-time-heading {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.pillo-time-kicker {
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--brand-primary);
+}
+
+.pillo-time-main {
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+/* Circular Countdown Ring with 3D Character Portrait Inside */
 .circle-ring-wrapper {
   position: relative;
-  width: 192px;
-  height: 192px;
+  width: 204px;
+  height: 204px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .circle-ring-svg {
-  width: 192px;
-  height: 192px;
+  width: 204px;
+  height: 204px;
   transform: rotate(-90deg);
 }
 
 .ring-track {
   fill: none;
   stroke: var(--bg-elevated);
-  stroke-width: 12;
+  stroke-width: 11;
 }
 
 .ring-progress {
   fill: none;
   stroke: var(--timer-calm);
-  stroke-width: 12;
+  stroke-width: 11;
   stroke-linecap: round;
   transition: stroke-dashoffset 0.35s linear, stroke 0.3s ease;
 }
@@ -443,61 +456,96 @@ html, body {
 
 .ring-center-content {
   position: absolute;
-  inset: 16px;
+  inset: 15px;
   border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 4px 16px hsla(0, 0%, 0%, 0.06) inset;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  text-align: center;
+  overflow: hidden;
+  padding: 6px;
 }
 
 .mascot-stage {
-  width: 82px;
-  height: 82px;
+  width: 112px;
+  height: 112px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
 }
 
-.countdown-readout {
-  font-family: var(--font-mono);
-  font-size: 21px;
-  font-weight: 700;
-  color: var(--text-primary);
-}
-
-.countdown-caption {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--text-secondary);
-}
-
-.active-dose-summary {
+.mascot-3d-img {
   width: 100%;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 18px;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.active-dose-title {
-  font-size: 17px;
+.countdown-pill-floating {
+  margin-top: -6px;
+  position: relative;
+  z-index: 4;
+  background: hsl(166, 38%, 13%);
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 16px;
+  font-weight: 800;
+  padding: 3px 12px;
+  border-radius: var(--radius-pill);
+  border: 2px solid #fff;
+  box-shadow: 0 4px 10px hsla(0, 0%, 0%, 0.16);
+}
+
+/* Active Medication Visual Card inside Time-Box */
+.pillo-med-spotlight {
+  width: 100%;
+  background: var(--bg-app);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 9px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.spotlight-3d-thumb {
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid var(--border-subtle);
+  padding: 2px;
+  flex-shrink: 0;
+  object-fit: contain;
+}
+
+.spotlight-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.spotlight-name {
+  font-size: 14px;
   font-weight: 800;
   color: var(--text-primary);
 }
 
-.active-dose-meta {
+.spotlight-dosage {
   font-size: 12px;
   color: var(--text-secondary);
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .companion-speech-bubble {
   width: 100%;
   background: var(--bg-elevated);
   border-radius: var(--radius-md);
-  padding: 8px 10px;
+  padding: 8px 11px;
   font-size: 12px;
   font-weight: 600;
   color: var(--text-primary);
@@ -505,11 +553,12 @@ html, body {
   border: 1px solid var(--border-subtle);
 }
 
-.timer-cta-row {
+/* Pillo.care Signature 3-Action Dock ("Take now", "Reschedule", "Skip") */
+.pillo-action-dock {
   width: 100%;
   display: grid;
-  grid-template-columns: 1.5fr 1fr;
-  gap: 8px;
+  grid-template-columns: 1.5fr 1fr 0.8fr;
+  gap: 6px;
 }
 
 .btn-primary-take {
@@ -517,31 +566,30 @@ html, body {
   background: var(--brand-primary);
   color: var(--text-on-accent);
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 800;
   padding: 11px 12px;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-pill);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 5px;
+  box-shadow: 0 4px 12px hsla(162, 68%, 24%, 0.25);
 }
 
 .btn-secondary-snooze {
-  border: 1px solid var(--border-strong);
+  border: 1.5px solid var(--border-strong);
   background: var(--bg-surface);
   color: var(--text-primary);
   font-size: 12px;
   font-weight: 700;
-  padding: 11px 10px;
-  border-radius: var(--radius-md);
+  padding: 11px 8px;
+  border-radius: var(--radius-pill);
   cursor: pointer;
+  text-align: center;
 }
 
-/* ==========================================================================
-   Interactive Situation Simulator Strip (Includes Critical Refill Trigger!)
-   ========================================================================== */
-
+/* Simulator Strip */
 .simulator-bar {
   width: 100%;
   background: var(--bg-elevated);
@@ -577,12 +625,6 @@ html, body {
   padding: 6px 6px;
   border-radius: var(--radius-sm);
   cursor: pointer;
-  text-align: center;
-}
-
-.sim-btn:hover {
-  border-color: var(--brand-primary);
-  background: var(--bg-subtle);
 }
 
 .sim-btn.sim-danger {
@@ -598,7 +640,7 @@ html, body {
 }
 
 /* ==========================================================================
-   Dose Schedule List & Cards
+   3D Illustrated Medication Cards
    ========================================================================== */
 
 .section-header {
@@ -630,7 +672,7 @@ html, body {
 
 .med-card {
   background: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
+  border: 1.5px solid var(--border-subtle);
   border-radius: var(--radius-md);
   padding: 10px 12px;
   display: flex;
@@ -638,6 +680,7 @@ html, body {
   justify-content: space-between;
   gap: 10px;
   cursor: pointer;
+  box-shadow: var(--shadow-card);
 }
 
 .med-card.active-selected {
@@ -645,7 +688,7 @@ html, body {
 }
 
 .med-card.med-taken {
-  opacity: 0.78;
+  opacity: 0.8;
   background: var(--bg-elevated);
 }
 
@@ -656,21 +699,28 @@ html, body {
   min-width: 0;
 }
 
-.med-icon-box {
-  width: 38px;
-  height: 38px;
-  border-radius: var(--radius-sm);
+.med-3d-icon-box {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid var(--border-subtle);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 18px;
-  background: var(--bg-subtle);
+  overflow: hidden;
   flex-shrink: 0;
+}
+
+.med-3d-icon-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .med-name {
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 800;
   color: var(--text-primary);
 }
 
@@ -716,7 +766,7 @@ html, body {
 }
 
 /* ==========================================================================
-   Bottom Navigation Tab Bar
+   Bottom Tab Bar
    ========================================================================== */
 
 .phone-tab-bar {
@@ -751,20 +801,19 @@ html, body {
 }
 
 /* ==========================================================================
-   PERSISTENT LOCKDOWN OVERLAY (Supports Worried -> Angry in Kid Mode,
-   and Critical Refill Lockdown + Circle Timer Expired Lockdown)
+   PERSISTENT LOCKDOWN OVERLAY (With 3D Pillo & Kid Buddy Artwork!)
    ========================================================================== */
 
 .angry-lockdown-overlay {
   position: absolute;
   inset: 0;
   z-index: 100;
-  background: linear-gradient(180deg, hsl(356, 78%, 22%) 0%, hsl(0, 82%, 32%) 50%, hsl(356, 84%, 16%) 100%);
+  background: linear-gradient(180deg, hsl(356, 80%, 24%) 0%, hsl(0, 84%, 34%) 50%, hsl(356, 86%, 16%) 100%);
   color: #fff;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 40px 14px 14px;
+  padding: 38px 14px 14px;
   opacity: 0;
   pointer-events: none;
   transform: scale(1.03);
@@ -773,13 +822,12 @@ html, body {
   gap: 8px;
 }
 
-/* Kid Mode Worried Stage Gradient (Before escalating to full Angry) */
 .angry-lockdown-overlay[data-kid-stage="worried"] {
-  background: linear-gradient(180deg, hsl(228, 56%, 24%) 0%, hsl(262, 52%, 32%) 50%, hsl(28, 75%, 28%) 100%);
+  background: linear-gradient(180deg, hsl(228, 62%, 26%) 0%, hsl(245, 56%, 36%) 55%, hsl(222, 66%, 20%) 100%);
 }
 
 .angry-lockdown-overlay[data-kid-stage="worried-angry"] {
-  background: linear-gradient(180deg, hsl(18, 78%, 26%) 0%, hsl(352, 72%, 34%) 55%, hsl(356, 80%, 20%) 100%);
+  background: linear-gradient(180deg, hsl(22, 84%, 28%) 0%, hsl(12, 82%, 36%) 55%, hsl(356, 80%, 20%) 100%);
 }
 
 .angry-lockdown-overlay.active {
@@ -809,8 +857,8 @@ html, body {
 }
 
 .fake-dismiss-btn {
-  background: hsla(0, 0%, 100%, 0.14);
-  border: 1px solid hsla(0, 0%, 100%, 0.3);
+  background: hsla(0, 0%, 100%, 0.16);
+  border: 1px solid hsla(0, 0%, 100%, 0.35);
   color: #fff;
   padding: 4px 10px;
   border-radius: var(--radius-pill);
@@ -819,7 +867,6 @@ html, body {
   cursor: pointer;
 }
 
-/* Kid Mode Worried -> Angry Escalation Stepper Pill */
 .kid-mood-stepper {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -834,13 +881,12 @@ html, body {
 .kid-stage-chip {
   border: none;
   background: transparent;
-  color: hsla(0, 0%, 100%, 0.72);
+  color: hsla(0, 0%, 100%, 0.78);
   font-size: 12px;
   font-weight: 700;
   padding: 4px 6px;
   border-radius: var(--radius-pill);
   cursor: pointer;
-  text-align: center;
 }
 
 .kid-stage-chip.active {
@@ -857,13 +903,38 @@ html, body {
   gap: 6px;
 }
 
-.angry-svg-container {
-  width: 106px;
-  height: 106px;
+/* Glowing 3D Character Portrait Frame on Lockdown Screen */
+.lockdown-3d-portrait-row {
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 10px;
+}
+
+.angry-svg-container {
+  width: 116px;
+  height: 116px;
+  border-radius: 28px;
+  background: #ffffff;
+  padding: 4px;
+  box-shadow:
+    0 12px 28px hsla(0, 0%, 0%, 0.35),
+    0 0 0 4px hsla(0, 0%, 100%, 0.28);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
   animation: angryStomp 0.95s infinite ease-in-out;
+}
+
+.refill-side-badge-img {
+  width: 82px;
+  height: 82px;
+  border-radius: 20px;
+  background: #fff;
+  padding: 4px;
+  object-fit: contain;
+  box-shadow: 0 8px 20px hsla(0, 0%, 0%, 0.3);
 }
 
 .angry-headline {
@@ -889,7 +960,7 @@ html, body {
 }
 
 /* ==========================================================================
-   Multi-Modal Verification Guarantee Box
+   Multi-Sensor Guarantee Suite Box
    ========================================================================== */
 
 .guarantee-box {
@@ -917,15 +988,6 @@ html, body {
   color: hsl(0, 76%, 42%);
 }
 
-.guarantee-step-tag {
-  font-size: 12px;
-  font-weight: 700;
-  background: hsl(38, 28%, 93%);
-  padding: 2px 8px;
-  border-radius: var(--radius-pill);
-}
-
-/* Interactive Verification Modules Grid (Face Scan, Pill Photo, Shake Water, PIN) */
 .verification-modules-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -933,14 +995,13 @@ html, body {
 }
 
 .verify-module-card {
-  background: hsl(40, 33%, 96%);
-  border: 1.5px solid hsl(38, 18%, 82%);
+  background: hsl(160, 25%, 97%);
+  border: 1.5px solid hsl(160, 18%, 84%);
   border-radius: var(--radius-sm);
-  padding: 8px;
+  padding: 7px;
   display: flex;
   flex-direction: column;
   gap: 5px;
-  transition: all 0.2s ease;
 }
 
 .verify-module-card.verified {
@@ -966,10 +1027,9 @@ html, body {
   color: hsl(156, 68%, 28%);
 }
 
-/* Camera / Face Scan Viewport Box */
 .scanner-preview-box {
   position: relative;
-  height: 58px;
+  height: 54px;
   border-radius: 8px;
   background: hsl(210, 28%, 14%);
   color: #fff;
@@ -981,6 +1041,16 @@ html, body {
   font-size: 12px;
   font-weight: 600;
   text-align: center;
+}
+
+.scanner-bg-art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #fff;
+  opacity: 0.92;
 }
 
 .scanner-video {
@@ -996,15 +1066,27 @@ html, body {
   position: absolute;
   left: 0;
   right: 0;
-  height: 2px;
-  background: #34d399;
-  box-shadow: 0 0 8px #34d399;
-  animation: laserSweep 1.3s ease-in-out infinite alternate;
+  height: 2.5px;
+  background: #10b981;
+  box-shadow: 0 0 8px #10b981;
+  z-index: 4;
+  animation: laserSweep 1.2s ease-in-out infinite alternate;
+}
+
+.scanner-overlay-badge {
+  position: relative;
+  z-index: 3;
+  background: hsla(210, 35%, 12%, 0.78);
+  color: #fff;
+  padding: 2px 7px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
 }
 
 .module-action-btn {
   border: none;
-  background: hsl(158, 48%, 22%);
+  background: var(--brand-primary);
   color: #fff;
   font-size: 12px;
   font-weight: 700;
@@ -1018,7 +1100,6 @@ html, body {
   background: hsl(156, 62%, 34%);
 }
 
-/* Parent PIN Input Row (Kid Mode) */
 .pin-input-row {
   display: flex;
   align-items: center;
@@ -1037,11 +1118,10 @@ html, body {
   text-align: center;
 }
 
-/* Water Shake Progress Meter */
 .shake-meter-bar {
   width: 100%;
   height: 8px;
-  background: hsl(38, 20%, 86%);
+  background: hsl(160, 20%, 86%);
   border-radius: 999px;
   overflow: hidden;
 }
@@ -1056,8 +1136,8 @@ html, body {
   display: flex;
   align-items: center;
   gap: 8px;
-  background: hsl(40, 33%, 96%);
-  border: 1px solid hsl(38, 18%, 84%);
+  background: hsl(160, 25%, 97%);
+  border: 1px solid hsl(160, 18%, 84%);
   padding: 7px 10px;
   border-radius: var(--radius-sm);
   cursor: pointer;
@@ -1076,18 +1156,17 @@ html, body {
   background: hsla(156, 62%, 34%, 0.08);
 }
 
-/* Hold-to-Guarantee Final Seal Button */
 .hold-guarantee-btn {
   position: relative;
   overflow: hidden;
   width: 100%;
   border: none;
-  background: hsl(158, 48%, 22%);
+  background: var(--brand-primary);
   color: #fff;
   font-size: 13px;
   font-weight: 800;
   padding: 12px 14px;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-pill);
   cursor: pointer;
   user-select: none;
   display: flex;
@@ -1123,8 +1202,8 @@ html, body {
 
 .lockdown-snooze-btn {
   flex: 1;
-  border: 1px solid hsl(38, 18%, 82%);
-  background: hsl(40, 25%, 96%);
+  border: 1px solid hsl(160, 18%, 82%);
+  background: hsl(160, 25%, 96%);
   color: hsl(160, 20%, 25%);
   font-size: 12px;
   font-weight: 700;
@@ -1234,10 +1313,6 @@ html, body {
   transform: translateY(0);
 }
 
-/* ==========================================================================
-   Animations
-   ========================================================================== */
-
 @keyframes pulseFast {
   from { opacity: 0.4; transform: scale(0.9); }
   to { opacity: 1; transform: scale(1.15); }
@@ -1245,14 +1320,14 @@ html, body {
 
 @keyframes laserSweep {
   from { top: 6px; }
-  to { top: 48px; }
+  to { top: 44px; }
 }
 
 @keyframes angryStomp {
   0%, 100% { transform: translateY(0) rotate(0deg) scale(1); }
-  25% { transform: translateY(-5px) rotate(-3deg) scale(1.03); }
-  50% { transform: translateY(0) rotate(3deg) scale(1.02); }
-  75% { transform: translateY(-4px) rotate(-2deg) scale(1.04); }
+  25% { transform: translateY(-4px) rotate(-2.5deg) scale(1.03); }
+  50% { transform: translateY(0) rotate(2.5deg) scale(1.02); }
+  75% { transform: translateY(-3px) rotate(-2deg) scale(1.03); }
 }
 
 @keyframes angryScreenShake {
