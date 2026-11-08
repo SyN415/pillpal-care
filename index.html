@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <title>Pillo Care+ — Adult &amp; Kid-Friendly Mobile Medication Companion</title>
-  <meta name="description" content="Restyled mobile medication reminder inspired by pillo.care with 3D Pillo characters, Circle Timer countdowns, Worried-to-Angry Kid Mode progression, and Multi-Sensor Dose Guarantee." />
+  <title>Pillo Care+ — Adult &amp; Kid-Friendly Mobile Medication &amp; Heart Companion</title>
+  <meta name="description" content="Restyled mobile medication & smartwatch heart rate companion inspired by pillo.care with 3D Pillo characters, Circle Timer countdowns, Worried-to-Angry Kid Mode progression, and Multi-Sensor Dose Guarantee." />
   <meta name="theme-color" content="#16382C" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="mobile-web-app-capable" content="yes" />
@@ -12,8 +12,8 @@
   <meta name="apple-mobile-web-app-title" content="Pillo Care+" />
   <link rel="apple-touch-icon" href="./assets/icon-192.png" />
   <link rel="icon" type="image/png" sizes="192x192" href="./assets/icon-192.png" />
-  <link rel="manifest" href="./manifest.json" />
-  <link rel="stylesheet" href="./styles.css" />
+  <link rel="manifest" href="./manifest.json?v=5" />
+  <link rel="stylesheet" href="./styles.css?v=5" />
 </head>
 <body>
   <div class="workspace-wrapper">
@@ -51,7 +51,7 @@
           <div class="header-actions">
             <span class="icon-btn streak-chip" id="streak-chip-text">🔥 14d • ❤️ 42</span>
             <button class="icon-btn" id="btn-mobile-install" onclick="openMobileInstallSheet()" type="button" title="Open or install on any mobile phone">
-              📲 Phone App
+              📲 App
             </button>
             <button class="icon-btn" id="btn-sound-toggle" onclick="toggleSound()" type="button">
               🔊 Sound
@@ -89,6 +89,10 @@
           <span class="tab-icon">⏱️</span>
           <span>Time-Box</span>
         </button>
+        <button class="tab-item" data-tab="heart" type="button" onclick="switchTab('heart')">
+          <span class="tab-icon">⌚</span>
+          <span>Heart Watch</span>
+        </button>
         <button class="tab-item" data-tab="log" type="button" onclick="switchTab('log')">
           <span class="tab-icon">🛡️</span>
           <span>Guarantee Log</span>
@@ -100,13 +104,13 @@
       </nav>
 
       <!-- PERSISTENT LOCKDOWN OVERLAY -->
-      <!-- Appears ONLY when the Circle Timer hits 00:00, Critical Refill (<=2 left), or Max Snooze -->
+      <!-- Appears ONLY when the Circle Timer hits 00:00, Critical Refill (<=2 left), Max Snooze, or Critical Watch Heart Rate Alert -->
       <section
         class="angry-lockdown-overlay"
         id="angry-lockdown-overlay"
         role="alertdialog"
         aria-modal="true"
-        aria-label="Urgent Medication Guarantee Required"
+        aria-label="Urgent Medication or Heart Rate Guarantee Required"
       ></section>
 
       <!-- Bottom Sheet Modal (for On-Time Guarantee, Mobile Install, or Adding Medication) -->
@@ -116,12 +120,14 @@
     </div>
   </div>
 
-  <script src="./assets.js"></script>
-  <script src="./app.js"></script>
+  <script src="./assets.js?v=5"></script>
+  <script src="./app.js?v=5"></script>
   <script>
     if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js').catch(() => {});
+        navigator.serviceWorker.register('./sw.js?v=5').then((reg) => {
+          reg.update();
+        }).catch(() => {});
       });
     }
   </script>

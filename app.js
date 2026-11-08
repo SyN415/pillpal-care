@@ -32,9 +32,22 @@ const INITIAL_DATA = {
 
   // Lockdown State Machine
   lockdownActive: false,
-  lockdownReason: 'timer-expired', // 'timer-expired' | 'critical-refill' | 'max-snooze'
+  lockdownReason: 'timer-expired', // 'timer-expired' | 'critical-refill' | 'max-snooze' | 'heart-rate-alert'
   kidLockdownStage: 'worried', // 'worried' | 'worried-angry' | 'angry'
   dismissAttemptsBlocked: 0,
+
+  // Smartwatch PPG & BLE Heart Rate Monitor State
+  heartWatch: {
+    connectedDeviceName: 'Smartwatch PPG Optical Sensor (530nm Green LED)',
+    isBleConnected: false,
+    bpm: 72,
+    hrvMs: 58,
+    spo2: 99,
+    restingMinutes: 12,
+    highThreshold: 120,
+    lowThreshold: 48,
+    zone: 'normal' // 'normal' | 'elevated' | 'critical-high' | 'critical-low'
+  },
 
   // Multi-Modal Guarantee Sensor States
   verification: {
@@ -623,6 +636,32 @@ function cancelHoldGuarantee(prefix) {
 function completeGuaranteeAction() {
   const med = getSelectedMed();
   if (!med) return;
+
+  if (state.lockdownReason === 'heart-rate-alert') {
+    const alertBpm = state.heartWatch.bpm;
+    state.heartWatch.bpm = state.persona === 'kid' ? 84 : 72;
+    state.heartWatch.hrvMs = 62;
+    state.heartWatch.zone = 'normal';
+    state.lockdownActive = false;
+    state.lockdownReason = 'timer-expired';
+    activeSheetMode = null;
+    resetVerificationState();
+
+    state.guaranteeLogs.unshift({
+      id: `log-${Date.now()}`,
+      persona: state.persona,
+      medName: `⌚ Watch Heart Rate Alert (${alertBpm} BPM)`,
+      dosage: `Normalized to ${state.heartWatch.bpm} BPM`,
+      timestamp: 'Just now',
+      method: `PPG Heart Check + ${med.name} Dose & Water Guarantee + 3s Hold`,
+      wasOverdue: true
+    });
+
+    playTone('success');
+    renderAll();
+    showCelebrationToast(`💓 Heart Rate & Dose Safety Guaranteed! Watch BPM stabilized at ${state.heartWatch.bpm} BPM.`);
+    return;
+  }
 
   if (state.lockdownReason === 'critical-refill') {
     med.stockLeft += 30;
@@ -1303,6 +1342,227 @@ function renderCabinetTab() {
 }
 
 /* ==========================================================================
+   Smartwatch PPG Optical Sensor & BLE Heart Rate Notifier (With Same 3D Characters & Moods)
+   ========================================================================== */
+
+function getHeartWatchCharacterMood() {
+  const z = state.heartWatch.zone;
+  if (z === 'critical-high' || z === 'critical-low') {
+    return state.persona === 'kid' ? state.kidLockdownStage : 'angry';
+  }
+  if (z === 'elevated') {
+    return state.persona === 'kid' ? 'worried' : 'impatient';
+  }
+  return 'calm';
+}
+
+function simulateHeartRateState(zone) {
+  const med = getSelectedMed();
+  state.heartWatch.zone = zone;
+  if (zone === 'normal') {
+    state.heartWatch.bpm = state.persona === 'kid' ? 84 : 72;
+    state.heartWatch.hrvMs = 60;
+    state.lockdownActive = false;
+    renderAll();
+  } else if (zone === 'elevated') {
+    state.heartWatch.bpm = state.persona === 'kid' ? 116 : 108;
+    state.heartWatch.hrvMs = 31;
+    state.lockdownActive = false;
+    playTone('worried-chime');
+    renderAll();
+  } else if (zone === 'critical-high') {
+    state.heartWatch.bpm = state.persona === 'kid' ? 144 : 138;
+    state.heartWatch.hrvMs = 18;
+    if (med) triggerPersistentLockdown(med, 'heart-rate-alert');
+  } else if (zone === 'critical-low') {
+    state.heartWatch.bpm = 42;
+    state.heartWatch.hrvMs = 22;
+    if (med) triggerPersistentLockdown(med, 'heart-rate-alert');
+  }
+}
+
+async function connectSmartwatchBLE() {
+  if (!navigator.bluetooth) {
+    showCelebrationToast('⌚ Web Bluetooth requires mobile Chrome/Brave/Edge over HTTPS. Use the PPG Simulator buttons below!');
+    return;
+  }
+  try {
+    const device = await navigator.bluetooth.requestDevice({
+      filters: [{ services: ['heart_rate'] }]
+    });
+    state.heartWatch.connectedDeviceName = device.name || 'BLE Heart Rate Watch (0x180D)';
+    state.heartWatch.isBleConnected = true;
+    const server = await device.gatt.connect();
+    const service = await server.getPrimaryService('heart_rate');
+    const char = await service.getCharacteristic('heart_rate_measurement');
+    await char.startNotifications();
+    char.addEventListener('characteristicvaluechanged', (event) => {
+      const value = event.target.value;
+      const flags = value.getUint8(0);
+      const is16Bit = (flags & 0x01) !== 0;
+      const bpm = is16Bit ? value.getUint16(1, true) : value.getUint8(1);
+      state.heartWatch.bpm = bpm;
+      if (bpm >= state.heartWatch.highThreshold) {
+        simulateHeartRateState('critical-high');
+      } else if (bpm <= state.heartWatch.lowThreshold) {
+        simulateHeartRateState('critical-low');
+      } else if (bpm >= 100) {
+        state.heartWatch.zone = 'elevated';
+        renderAll();
+      } else {
+        state.heartWatch.zone = 'normal';
+        renderAll();
+      }
+    });
+    showCelebrationToast(`⌚ Paired with ${state.heartWatch.connectedDeviceName} via BLE 0x180D!`);
+    renderAll();
+  } catch (_) {
+    showCelebrationToast('⌚ BLE pairing canceled — use the PPG Watch Simulator buttons below to test all moods!');
+  }
+}
+
+function renderHeartWatchTab(med) {
+  const hw = state.heartWatch;
+  const mood = getHeartWatchCharacterMood();
+  const isCritical = hw.zone === 'critical-high' || hw.zone === 'critical-low';
+  const waveZone = isCritical ? 'critical' : hw.zone === 'elevated' ? 'elevated' : 'normal';
+  const cardMood = isCritical ? 'angry' : hw.zone === 'elevated' ? (state.persona === 'kid' ? 'worried' : 'impatient') : 'calm';
+
+  let speechText = '';
+  if (state.persona === 'kid') {
+    if (hw.zone === 'normal') {
+      speechText = `😄 "Leo's smartwatch green PPG sensor reads a calm ${hw.bpm} BPM! Barnaby's heart is happy!"`;
+    } else if (hw.zone === 'elevated') {
+      speechText = `😟 "Whoa Leo! Your resting heart rate climbed to ${hw.bpm} BPM! Barnaby is getting worried — take a slow Dino breath!"`;
+    } else {
+      speechText = `😠 "ALERT! Watch detected ${hw.bpm} BPM at rest for 10+ mins! Barnaby went from Worried to Grumpy until a parent checks your dose!"`;
+    }
+  } else {
+    if (hw.zone === 'normal') {
+      speechText = `🙂 "Wrist PPG sensor (530nm Green LED + Accelerometer filter) shows steady ${hw.bpm} BPM and ${hw.hrvMs}ms HRV."`;
+    } else if (hw.zone === 'elevated') {
+      speechText = `🤨 "Resting heart rate rose to ${hw.bpm} BPM (HRV ${hw.hrvMs}ms) with 0 steps detected. Did you miss ${med ? med.name : 'your dose'}?"`;
+    } else {
+      speechText = `😡 "CRITICAL WATCH ALERT (${hw.bpm} BPM at rest)! The Angry Pill Box locked your screen until you verify your dose & breathing!"`;
+    }
+  }
+
+  return `
+    <section class="circle-timer-card" data-mood="${cardMood}">
+      <div class="pillo-alarm-banner">
+        <span class="timer-status-badge">
+          <span class="status-dot"></span>
+          <span>⌚ ${hw.isBleConnected ? 'Live BLE 0x180D' : 'PPG Optical Sensor'}</span>
+        </span>
+        <span class="active-med-pill-tag">HRV ${hw.hrvMs}ms • SpO₂ ${hw.spo2}%</span>
+      </div>
+
+      <div class="pillo-time-heading">
+        <span class="pillo-time-kicker">Smartwatch Heart Detection Notifier</span>
+        <h2 class="pillo-time-main">
+          ${
+            isCritical
+              ? `🚨 Abnormal Resting HR: ${hw.bpm} BPM`
+              : hw.zone === 'elevated'
+              ? `⚠️ Elevated Resting HR: ${hw.bpm} BPM`
+              : `💓 Resting Heart Rate: ${hw.bpm} BPM`
+          }
+        </h2>
+      </div>
+
+      <!-- Same 3D Pillo / Kid Buddy Character Responding to Watch Heart Rate -->
+      <div class="circle-ring-wrapper">
+        <svg class="circle-ring-svg" viewBox="0 0 204 204">
+          <circle class="ring-track" cx="102" cy="102" r="86"></circle>
+          <circle class="ring-progress" cx="102" cy="102" r="86" style="stroke-dasharray: 540; stroke-dashoffset: ${isCritical ? 20 : hw.zone === 'elevated' ? 140 : 90};"></circle>
+        </svg>
+        <div class="ring-center-content">
+          <div class="mascot-stage">
+            ${getCompanionArtworkHTML(state.persona, mood, mood === 'calm' ? 'mascot-calm' : 'mascot-impatient')}
+          </div>
+          <div class="countdown-pill-floating">
+            ❤️ ${hw.bpm} BPM
+          </div>
+        </div>
+      </div>
+
+      <!-- Live PPG Optical Pulse Waveform Box -->
+      <div class="ppg-wave-box" data-hr-zone="${waveZone}">
+        <div class="ppg-top-meta">
+          <span>🟢 530nm PPG + 3-Axis Motion Filter</span>
+          <span>Sedentary: ${hw.restingMinutes}m • Threshold: ${hw.lowThreshold}–${hw.highThreshold} BPM</span>
+        </div>
+        <svg class="ppg-svg-line" viewBox="0 0 300 36" preserveAspectRatio="none">
+          <path d="M0,22 L28,22 L36,16 L44,22 L56,22 L62,29 L70,4 L78,32 L85,18 L94,22 L130,22 L138,16 L146,22 L158,22 L164,29 L172,4 L180,32 L187,18 L196,22 L230,22 L238,16 L246,22 L258,22 L264,29 L272,4 L280,32 L287,18 L300,22" />
+        </svg>
+      </div>
+
+      <div class="companion-speech-bubble">
+        ${speechText}
+      </div>
+
+      <div class="pillo-action-dock" style="grid-template-columns: 1fr 1fr;">
+        <button type="button" class="btn-primary-take" onclick="connectSmartwatchBLE()">
+          ⌚ Pair BLE Watch (0x180D)
+        </button>
+        <button type="button" class="btn-secondary-snooze" onclick="simulateHeartRateState('critical-high')">
+          🚨 Trigger HR Lockdown
+        </button>
+      </div>
+
+      <div class="simulator-bar">
+        <div class="simulator-header">
+          <span>⌚ Test Watch Heart Rate Character Moods:</span>
+          <span>${state.persona === 'kid' ? 'Worried → Angry' : 'Adult Pillo'}</span>
+        </div>
+        <div class="simulator-buttons">
+          <button type="button" class="sim-btn" onclick="simulateHeartRateState('normal')">
+            🟢 Resting (${state.persona === 'kid' ? '84' : '72'} BPM • Calm)
+          </button>
+          <button type="button" class="sim-btn" onclick="simulateHeartRateState('elevated')">
+            🟡 Elevated (${state.persona === 'kid' ? '116' : '108'} BPM • ${state.persona === 'kid' ? 'Worried' : 'Alert'})
+          </button>
+          <button type="button" class="sim-btn sim-danger" onclick="simulateHeartRateState('critical-high')">
+            😡 High HR Lock (138 BPM)
+          </button>
+          <button type="button" class="sim-btn sim-refill" onclick="simulateHeartRateState('critical-low')">
+            🥶 Low HR Lock (42 BPM)
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <div class="section-header">
+      <h3 class="section-title">How Smartwatch Heart Detection Links to Pillo</h3>
+    </div>
+    <div class="med-list">
+      <div class="med-card">
+        <div class="med-left">
+          <div class="med-3d-icon-box">
+            <img src="${getAssetURI('adult_calm')}" alt="PPG Sensor" />
+          </div>
+          <div>
+            <div class="med-name">1. 530nm Green LED PPG + Motion Filter</div>
+            <div class="med-sub">Optical photodiodes measure blood volume pulse while 3-axis accelerometers subtract arm movement.</div>
+          </div>
+        </div>
+      </div>
+      <div class="med-card">
+        <div class="med-left">
+          <div class="med-3d-icon-box">
+            <img src="${getAssetURI('kid_worried')}" alt="Sedentary Spike" />
+          </div>
+          <div>
+            <div class="med-name">2. 10-Min Sedentary Threshold &amp; Missed Meds</div>
+            <div class="med-sub">Alerts only fire if BPM stays &gt;120 or &lt;48 for 10+ mins with 0 steps — or when a cardiovascular dose (${med ? med.name : 'Lisinopril'}) is overdue.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+/* ==========================================================================
    Persistent Lockdown Overlay (With 3D Pillo Angry Pill Box & Kid Progression)
    ========================================================================== */
 
@@ -1324,7 +1584,22 @@ function renderAngryLockdownOverlay(med) {
   let headlineText = '';
   let subcopyText = '';
 
-  if (state.lockdownReason === 'critical-refill') {
+  if (state.lockdownReason === 'heart-rate-alert') {
+    const bpm = state.heartWatch.bpm;
+    situationBadge = `⌚ WATCH HEART RATE ALERT (${bpm} BPM AT REST)`;
+    if (isKid) {
+      headlineText =
+        currentMood === 'worried'
+          ? `😟 Barnaby is Worried! Leo's Watch Detected ${bpm} BPM at Rest!`
+          : currentMood === 'worried-angry'
+          ? `😣 Barnaby is Upset! Check Leo's Breathing & ${med.name} Dose!`
+          : `😠 BARNABY IS GRUMPY-ANGRY! ${bpm} BPM Alert — Verify Safety Now!`;
+      subcopyText = `Your smartwatch detected an abnormal resting heart rate (${bpm} BPM). Complete the Face Scan, Water Sip, & Parent PIN Guarantee!`;
+    } else {
+      headlineText = `😡 ANGRY PILL BOX HEART ALERT: ${bpm} BPM Detected at Rest!`;
+      subcopyText = `Your smartwatch PPG sensor detected ${bpm} BPM for 10+ sedentary minutes. Verify your ${med.name} dose & hydration below to unlock!`;
+    }
+  } else if (state.lockdownReason === 'critical-refill') {
     situationBadge = `🚨 CRITICAL REFILL ALERT (${med.stockLeft} LEFT!)`;
     if (isKid) {
       headlineText =
@@ -1706,6 +1981,8 @@ function renderAll() {
     if (state.activeTab === 'today') {
       mainContainer.innerHTML = renderTodayTab(med);
       updateCircleTimerDOM();
+    } else if (state.activeTab === 'heart') {
+      mainContainer.innerHTML = renderHeartWatchTab(med);
     } else if (state.activeTab === 'log') {
       mainContainer.innerHTML = renderLogTab();
     } else {

@@ -1,11 +1,11 @@
-const CACHE_NAME = 'pillo-care-plus-v3';
+const CACHE_NAME = 'pillo-care-plus-v5';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
-  './styles.css',
-  './assets.js',
-  './app.js',
-  './manifest.json',
+  './styles.css?v=5',
+  './assets.js?v=5',
+  './app.js?v=5',
+  './manifest.json?v=5',
   './assets/icon-192.png',
   './assets/icon-512.png',
   './assets/adult_calm.webp',
@@ -36,20 +36,18 @@ self.addEventListener('activate', (event) => {
   );
 });
 
+// Network-First strategy so mobile browsers always get the latest CSS/JS immediately
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
   event.respondWith(
-    caches.match(event.request).then((cached) => {
-      const fetchPromise = fetch(event.request)
-        .then((networkResponse) => {
-          if (networkResponse && networkResponse.status === 200) {
-            const copy = networkResponse.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
-          }
-          return networkResponse;
-        })
-        .catch(() => cached);
-      return cached || fetchPromise;
-    })
+    fetch(event.request)
+      .then((networkResponse) => {
+        if (networkResponse && networkResponse.status === 200) {
+          const copy = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
+        }
+        return networkResponse;
+      })
+      .catch(() => caches.match(event.request))
   );
 });
