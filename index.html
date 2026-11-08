@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en" data-persona="adult">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>PillPal Care — Adult &amp; Kid-Friendly Mobile Medication Companion</title>
+  <meta name="description" content="Restyled mobile medication reminder inspired by pillo.care with Circle Timer countdowns, conditional Angry Face screen lock when the timer expires, and a 2-step Dose Guarantee." />
+  <meta name="theme-color" content="#16382C" />
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div class="workspace-wrapper">
+    <!-- Mobile Phone Hardware Frame (Full-bleed on mobile devices) -->
+    <div class="phone-device" id="phone-device-shell">
+      <!-- Top Phone Status Bar & Dynamic Island -->
+      <div class="phone-status-bar">
+        <span>9:41</span>
+        <div class="dynamic-island" id="dynamic-island">
+          <span class="island-dot"></span>
+          <span id="dynamic-island-text">00:45</span>
+        </div>
+        <div class="status-icons">
+          <span>5G</span>
+          <span>100%</span>
+        </div>
+      </div>
+
+      <!-- Celebration Toast Banner -->
+      <div class="celebration-toast" id="celebration-toast" role="status" aria-live="polite">
+        <span id="celebration-toast-text">Dose Guaranteed!</span>
+      </div>
+
+      <!-- App Header & Adult / Kid Persona Switcher -->
+      <header class="app-header">
+        <div class="header-top-row">
+          <div class="brand-cluster">
+            <div class="brand-logo-badge" aria-hidden="true">P</div>
+            <div class="brand-titles">
+              <h1 id="app-main-title">PillPal Care</h1>
+              <div class="brand-subtitle" id="app-main-subtitle">Alex (Adult Mode) • Persistent Adherence</div>
+            </div>
+          </div>
+
+          <div class="header-actions">
+            <span class="icon-btn streak-chip" id="streak-chip-text">🔥 14d • ❤️ 42</span>
+            <button class="icon-btn" id="btn-sound-toggle" onclick="toggleSound()" type="button">
+              🔊 Sound
+            </button>
+          </div>
+        </div>
+
+        <!-- Seamless Adult vs. Kid Mode Switcher -->
+        <div class="persona-switcher" role="tablist" aria-label="Switch between Adult and Kid Mode">
+          <button
+            id="btn-persona-adult"
+            class="persona-btn active"
+            type="button"
+            onclick="switchPersona('adult')"
+          >
+            🧑 Adult Mode (Alex)
+          </button>
+          <button
+            id="btn-persona-kid"
+            class="persona-btn"
+            type="button"
+            onclick="switchPersona('kid')"
+          >
+            🧒 Kid Mode (Leo, 8)
+          </button>
+        </div>
+      </header>
+
+      <!-- Main Scrollable Mobile Content Area -->
+      <main class="phone-main" id="phone-main-content"></main>
+
+      <!-- Bottom Mobile Navigation Bar -->
+      <nav class="phone-tab-bar" aria-label="Primary Bottom Navigation">
+        <button class="tab-item active" data-tab="today" type="button" onclick="switchTab('today')">
+          <span class="tab-icon">⏱️</span>
+          <span>Circle Timer</span>
+        </button>
+        <button class="tab-item" data-tab="log" type="button" onclick="switchTab('log')">
+          <span class="tab-icon">🛡️</span>
+          <span>Guarantee Log</span>
+        </button>
+        <button class="tab-item" data-tab="cabinet" type="button" onclick="switchTab('cabinet')">
+          <span class="tab-icon">🧰</span>
+          <span>Cabinet &amp; Family</span>
+        </button>
+      </nav>
+
+      <!-- PERSISTENT ANGRY FACE SCREEN LOCKDOWN OVERLAY -->
+      <!-- Appears ONLY when the Circle Timer hits 00:00 and the medication was not taken -->
+      <section
+        class="angry-lockdown-overlay"
+        id="angry-lockdown-overlay"
+        role="alertdialog"
+        aria-modal="true"
+        aria-label="Urgent Medication Guarantee Required"
+      ></section>
+
+      <!-- Bottom Sheet Modal (for On-Time Guarantee or Adding Medication) -->
+      <div class="sheet-backdrop" id="sheet-backdrop" onclick="closeBottomSheet()">
+        <div class="bottom-sheet" id="bottom-sheet-content" onclick="event.stopPropagation()"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="./app.js"></script>
+</body>
+</html>
