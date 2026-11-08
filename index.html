@@ -3,17 +3,23 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <title>PillPal Care — Adult &amp; Kid-Friendly Mobile Medication Companion</title>
+  <title>Pillo Care+ — Adult &amp; Kid-Friendly Mobile Medication Companion</title>
   <meta name="description" content="Restyled mobile medication reminder inspired by pillo.care with 3D Pillo characters, Circle Timer countdowns, Worried-to-Angry Kid Mode progression, and Multi-Sensor Dose Guarantee." />
   <meta name="theme-color" content="#16382C" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Pillo Care+" />
+  <link rel="apple-touch-icon" href="./assets/icon-192.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="./assets/icon-192.png" />
   <link rel="manifest" href="./manifest.json" />
   <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
   <div class="workspace-wrapper">
-    <!-- Mobile Phone Hardware Frame (Full-bleed on mobile devices) -->
+    <!-- Mobile Phone Hardware Frame (Full-bleed edge-to-edge on real mobile devices) -->
     <div class="phone-device" id="phone-device-shell">
-      <!-- Top Phone Status Bar & Dynamic Island -->
+      <!-- Top Phone Status Bar & Dynamic Island (Desktop Simulator Frame only; auto-hidden on real mobile devices) -->
       <div class="phone-status-bar">
         <span>9:41</span>
         <div class="dynamic-island" id="dynamic-island">
@@ -37,13 +43,16 @@
           <div class="brand-cluster">
             <div class="brand-logo-badge" id="header-mascot-avatar" aria-hidden="true">P</div>
             <div class="brand-titles">
-              <h1 id="app-main-title">PillPal Care</h1>
-              <div class="brand-subtitle" id="app-main-subtitle">Alex (Adult) • Pill Scan + Shake Guarantee</div>
+              <h1 id="app-main-title">Pillo Care+</h1>
+              <div class="brand-subtitle" id="app-main-subtitle">The Angry Pill Box • Adult Mode</div>
             </div>
           </div>
 
           <div class="header-actions">
             <span class="icon-btn streak-chip" id="streak-chip-text">🔥 14d • ❤️ 42</span>
+            <button class="icon-btn" id="btn-mobile-install" onclick="openMobileInstallSheet()" type="button" title="Open or install on any mobile phone">
+              📲 Phone App
+            </button>
             <button class="icon-btn" id="btn-sound-toggle" onclick="toggleSound()" type="button">
               🔊 Sound
             </button>
@@ -100,7 +109,7 @@
         aria-label="Urgent Medication Guarantee Required"
       ></section>
 
-      <!-- Bottom Sheet Modal (for On-Time Guarantee or Adding Medication) -->
+      <!-- Bottom Sheet Modal (for On-Time Guarantee, Mobile Install, or Adding Medication) -->
       <div class="sheet-backdrop" id="sheet-backdrop" onclick="closeBottomSheet()">
         <div class="bottom-sheet" id="bottom-sheet-content" onclick="event.stopPropagation()"></div>
       </div>
@@ -109,5 +118,12 @@
 
   <script src="./assets.js"></script>
   <script src="./app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
+      });
+    }
+  </script>
 </body>
 </html>

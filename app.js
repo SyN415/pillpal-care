@@ -502,7 +502,15 @@ function stopCameraStream() {
   }
 }
 
-function triggerWaterShakeStep() {
+async function triggerWaterShakeStep() {
+  try {
+    if (
+      typeof DeviceMotionEvent !== 'undefined' &&
+      typeof DeviceMotionEvent.requestPermission === 'function'
+    ) {
+      await DeviceMotionEvent.requestPermission().catch(() => {});
+    }
+  } catch (_) {}
   state.verification.waterShakeProgress = Math.min(100, state.verification.waterShakeProgress + 35);
   playTone('scan-beep');
   renderAll();
@@ -1444,6 +1452,36 @@ function openCalmGuaranteeSheet() {
   renderAll();
 }
 
+let deferredInstallPrompt = null;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+});
+
+function openMobileInstallSheet() {
+  activeSheetMode = 'mobile-install';
+  renderAll();
+}
+
+function copyLiveHostedURL() {
+  const liveUrl = 'https://syn415.github.io/pillpal-care/';
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(liveUrl).catch(() => {});
+  }
+  showCelebrationToast('📋 Copied live mobile URL: https://syn415.github.io/pillpal-care/');
+}
+
+async function triggerNativePWAInstall() {
+  if (deferredInstallPrompt) {
+    deferredInstallPrompt.prompt();
+    await deferredInstallPrompt.userChoice.catch(() => {});
+    deferredInstallPrompt = null;
+    renderAll();
+  } else {
+    showCelebrationToast('📲 On iPhone: tap Share ➔ "Add to Home Screen". On Android: tap Chrome Menu ➔ "Install App"!');
+  }
+}
+
 function openAddMedSheet() {
   activeSheetMode = 'add-med';
   renderAll();
@@ -1477,6 +1515,40 @@ function renderBottomSheet(med) {
         You responded before the Time-Box ran out (${med.timerRemaining}s left)! Complete the sensor verification below:
       </p>
       ${renderVerificationSuiteHTML('calm', med)}
+    `;
+  } else if (activeSheetMode === 'mobile-install') {
+    const liveUrl = 'https://syn415.github.io/pillpal-care/';
+    container.innerHTML = `
+      <div class="sheet-header">
+        <h3 class="sheet-title">📲 Test &amp; Install on Any Mobile Device</h3>
+        <button type="button" class="sheet-close" onclick="closeBottomSheet()">✕</button>
+      </div>
+      <p style="font-size: 12px; color: var(--text-secondary);">
+        <strong>Pillo Care+</strong> is hosted live over HTTPS with full PWA mobile support (Camera Pill/Face Scanner, Hardware Shake Sensor, and Full-Screen Home Screen App mode):
+      </p>
+      <div class="pillo-med-spotlight" style="justify-content: space-between;">
+        <div class="spotlight-details">
+          <div class="spotlight-name" style="font-family: var(--font-mono); font-size: 12px; word-break: break-all;">
+            ${liveUrl}
+          </div>
+          <div class="spotlight-dosage">Live HTTPS GitHub Pages Deployment • iOS &amp; Android Ready</div>
+        </div>
+        <button type="button" class="sim-btn" onclick="copyLiveHostedURL()" style="flex-shrink:0;">
+          📋 Copy URL
+        </button>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:8px; font-size:12px; color:var(--text-secondary); background:var(--bg-surface-muted); padding:12px; border-radius:14px;">
+        <div><strong>🍏 iPhone / iPad (Safari):</strong> Open <code>${liveUrl}</code> ➔ tap <strong>Share (↑)</strong> ➔ tap <strong>"Add to Home Screen"</strong> for a full-screen standalone app.</div>
+        <div><strong>🤖 Android (Chrome):</strong> Open <code>${liveUrl}</code> ➔ tap <strong>Install App</strong> (or Chrome Menu ⋮ ➔ <strong>Add to Home screen</strong>).</div>
+      </div>
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
+        <button type="button" class="btn-primary-take" onclick="triggerNativePWAInstall()">
+          📲 Install to Home Screen
+        </button>
+        <a href="${liveUrl}" target="_blank" rel="noopener" class="btn-secondary-snooze" style="text-decoration:none; display:flex; align-items:center; justify-content:center;">
+          🌐 Open Live URL ↗
+        </a>
+      </div>
     `;
   } else if (activeSheetMode === 'add-med') {
     container.innerHTML = `
