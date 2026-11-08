@@ -2,39 +2,35 @@
 
 Inspired by [**pillo.care**](https://pillo.care) (*"The Angry Pill Box"*), **PillPal Care** is a restyled, mobile-first medication reminder and adherence application designed for both **adults** and **kids/families**.
 
-## Why We Built This (Research Insights from `pillo.care`)
+## Key Features & Iteration 2 Upgrades
 
-50% of patients miss medications not out of resistance, but because **standard phone notifications are designed to be swiped away and forgotten**. Our research into `pillo.care` identified four behavioral pillars that drive 92%+ medication adherence:
+### 1. Dual Persona Modes & Kid Mode "Worried → Angry" Emotional Progression
+- **Adult Mode ("Tactile Botanical Studio")**: High-contrast editorial typography, pill shape/color identifiers, refill stock counters, and **Pillo Guard** (an expressive capsule companion who turns stern and fiery when a critical trigger fires).
+- **Kid Mode ("Hero Dose Adventure")**: Friendly rounded typography, reassuring medicine descriptions (*"Berry Shield Chewable"*), Star Sticker & Hero Streak rewards, and **Barnaby the Buddy** with a gentle **Worried → Worried-Angry → Angry** emotional progression:
+  - When the Circle Timer runs low or first hits `00:00`, Barnaby starts **😟 Worried** (big puppy-dog eyes, drooping horns, tear drop) rather than immediately frightening the child.
+  - If the lockdown remains unverified (or if dismissal attempts are made), Barnaby escalates through **😣 Worried-Angry** to **😠 Full Grumpy-Angry**.
 
-1. **The Circular "Time-Box" Countdown (`Circle Timer`)**: Instead of a fleeting chime, each scheduled dose opens an active circular countdown window.
-2. **Conditional Escalation (Calm → Impatient → Angry Lockdown)**:
-   - While the **Circle Timer** has time remaining, the companion mascot stays **calm and encouraging** (then gets slightly **impatient** as time runs low).
-   - **Specific Angry-Face Trigger**: The persistent, full-screen **Angry Face** takeover **only appears when the circle timer reaches `00:00` and the medication has still not been taken**.
-3. **Un-Ignorable Screen Persistence**: Once the Angry Face appears, it refuses to leave the screen. Tapping outside or hitting a close button shakes the viewport and scolds the user until a verified **Dose Guarantee** (or an explicit context-aware Smart Snooze) is completed.
-4. **The Medication Guarantee**: Prevents muscle-memory false confirmations by requiring a physical dose check plus a tactile **3-second Hold-to-Guarantee** confirmation ring.
+### 2. Multi-Modal "Medication Guarantee" Suite
+To unlock a persistent screen takeover (or confirm an on-time dose), users complete a multi-sensor verification flow:
+- **📷 Camera / Photo Pill & Cup Scanner**: Uses `navigator.mediaDevices.getUserMedia` (with an AI vision laser-sweep fallback) to match the physical pill or measuring cup.
+- **👦 Child Face Scan Verification (Kid Mode)**: Biometric facial landmark scanner that verifies the child taking their dose alongside their medicine cup.
+- **📳 Shake-Phone-with-Water Gesture**: Uses hardware `DeviceMotionEvent` accelerometer detection (plus an interactive tap/shake meter) to verify the user has water in hand.
+- **🔐 Parent 4-Digit PIN Verification (Kid Mode)**: Caregiver approval keypad (`1234` default) before sealing a child's dose guarantee.
+- **👆 3-Second Press-and-Hold Commitment Seal**: Final hold-to-guarantee progress bar that prevents accidental muscle-memory dismissals.
 
----
-
-## Key Restyling Features
-
-- **Dual Persona Modes (Adult & Kid-Friendly)**:
-  - **Adult Mode ("Tactile Clinical Warmth")**: High-contrast editorial typography, pill shape/color identifiers, interaction & food notes, refill stock counters, and **Pillo Guard** (an expressive capsule companion who turns hilariously stern and fiery when the circle timer expires).
-  - **Kid Mode ("Hero Dose Adventure")**: Friendly rounded typography, reassuring medicine descriptions (*"Berry Shield Chewable"*), Star Sticker & Hero Streak rewards, caregiver/parent verification prompts, and **Barnaby the Buddy** (a lovable mascot who throws a dramatic, puffy-cheeked grumpy tantrum if the circle timer hits zero).
-- **Interactive Circle Timer & Situation Simulator**:
-  - Watch the live SVG circular timer count down, jump to the **Low Timer Warning (`00:08`)**, or tap **Simulate Timer Up (`00:00`)** to immediately test the non-dismissible Angry Face screen takeover.
-- **Multi-Step Dose Guarantee**:
-  - **Step 1**: Verify physical readiness (correct pill/liquid + water check, or parent high-five in Kid Mode).
-  - **Step 2**: Press and hold the **Hold 3s to Guarantee** button to unlock the screen and log a verified timestamp.
-- **Smart Context-Aware Snooze**:
-  - Supports intentional rescheduling for *Eating a Meal First*, *Driving Safety (>15 mph)*, *On a Phone Call*, or *Until Arriving Home* without losing the pending dose.
+### 3. Specific Persistent Screen Lockdown Situations
+The non-dismissible screen takeover **only** appears in specific high-priority situations:
+1. **Circle Timer Expired (`00:00`)**: The countdown circle finishes and the medication has not been taken.
+2. **Critical Refill Alert (`<= 2 doses remaining`)**: A medication's bottle stock drops into the critical threshold, requiring a **Refill Bottle Scan + 3s Hold Refill Guarantee** to clear.
+3. **Excessive Snoozing (`> 2 consecutive snoozes`)**: Prevents无限 postponing a critical dose.
 
 ---
 
 ## Project Structure
 
-- `index.html` — Mobile-first application shell, SVG companion definitions, and modal overlays
-- `styles.css` — Custom HSL design tokens for Adult & Kid themes, mobile phone viewport framing, and keyframe character animations
-- `app.js` — Circle timer engine, conditional angry-face lockdown state machine, 3-second hold-to-guarantee gesture handler, Web Audio synthesizer, and local state persistence
+- `index.html` — Mobile-first application shell, status bar / Dynamic Island, and modal overlays
+- `styles.css` — Custom HSL design tokens for Adult & Kid themes, multi-sensor scanner UI, and keyframe character animations
+- `app.js` — Circle timer engine, Worried→Angry state machine, Camera/Face/Accelerometer/PIN verification handlers, and Critical Refill Lockdown
 - `manifest.json` — Progressive Web App (PWA) configuration for mobile home-screen installation
 
 ## Running Locally

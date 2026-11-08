@@ -1,14 +1,13 @@
 /* ==========================================================================
    PillPal Care — Mobile Design System (Adult & Kid-Friendly Dual Theme)
+   Iteration 2: Multi-Modal Guarantee (Face Scan, Pill Camera, Shake Gesture,
+   Parent PIN), Kid Mode Worried-to-Angry Progression, & Critical Refill Alert
    ========================================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700&display=swap');
-
 :root {
-  /* Default: Adult Persona ("Tactile Botanical Studio") */
-  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-display: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-display: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
   --bg-outer: hsl(38, 24%, 90%);
   --bg-app: hsl(40, 33%, 96%);
@@ -42,10 +41,7 @@
   --shadow-float: 0 12px 28px hsla(160, 30%, 12%, 0.12);
 }
 
-/* Kid Persona ("Storybook Buddy Adventure") */
 [data-persona="kid"] {
-  --font-display: 'Fredoka', 'Plus Jakarta Sans', sans-serif;
-
   --bg-outer: hsl(44, 65%, 90%);
   --bg-app: hsl(46, 85%, 97%);
   --bg-surface: hsl(0, 0%, 100%);
@@ -100,15 +96,14 @@ html, body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 16px 12px;
-  gap: 12px;
+  padding: 14px 10px;
 }
 
 .phone-device {
   width: 100%;
-  max-width: 412px;
-  height: 844px;
-  max-height: 94vh;
+  max-width: 416px;
+  height: 856px;
+  max-height: 95vh;
   background: var(--bg-app);
   border-radius: 44px;
   border: 10px solid hsl(160, 20%, 12%);
@@ -142,8 +137,8 @@ html, body {
 
 /* Status Bar & Dynamic Island */
 .phone-status-bar {
-  height: 44px;
-  padding: 10px 24px 4px;
+  height: 42px;
+  padding: 8px 22px 4px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -156,7 +151,7 @@ html, body {
 }
 
 .dynamic-island {
-  width: 108px;
+  width: 112px;
   height: 24px;
   background: hsl(160, 20%, 10%);
   border-radius: 999px;
@@ -165,13 +160,18 @@ html, body {
   justify-content: space-between;
   padding: 0 10px;
   color: #fff;
-  font-size: 11px;
-  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), width 0.25s ease, background-color 0.25s ease;
+  font-size: 12px;
+  transition: all 0.25s ease;
 }
 
 .dynamic-island.island-alert {
-  width: 164px;
+  width: 168px;
   background: var(--timer-expired);
+}
+
+.dynamic-island.island-worried {
+  width: 168px;
+  background: hsl(28, 90%, 44%);
 }
 
 .island-dot {
@@ -181,7 +181,8 @@ html, body {
   background: #34d399;
 }
 
-.dynamic-island.island-alert .island-dot {
+.dynamic-island.island-alert .island-dot,
+.dynamic-island.island-worried .island-dot {
   background: #fff;
   animation: pulseFast 0.7s infinite alternate;
 }
@@ -193,14 +194,14 @@ html, body {
 }
 
 /* ==========================================================================
-   Top App Header & Persona Switcher (Adult vs Kid Mode)
+   Top App Header & Persona Switcher
    ========================================================================== */
 
 .app-header {
-  padding: 8px 18px 12px;
+  padding: 6px 16px 10px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
   border-bottom: 1px solid var(--border-subtle);
   background: var(--bg-app);
   flex-shrink: 0;
@@ -220,8 +221,8 @@ html, body {
 }
 
 .brand-logo-badge {
-  width: 36px;
-  height: 36px;
+  width: 34px;
+  height: 34px;
   border-radius: var(--radius-sm);
   background: var(--brand-primary);
   color: var(--text-on-accent);
@@ -230,12 +231,11 @@ html, body {
   justify-content: center;
   font-weight: 800;
   font-size: 16px;
-  box-shadow: 0 2px 6px hsla(0, 0%, 0%, 0.12);
 }
 
 .brand-titles h1 {
   font-family: var(--font-display);
-  font-size: 17px;
+  font-size: 16px;
   font-weight: 800;
   letter-spacing: -0.02em;
   line-height: 1.15;
@@ -257,25 +257,15 @@ html, body {
   border: 1px solid var(--border-subtle);
   background: var(--bg-surface);
   color: var(--text-primary);
-  height: 34px;
-  padding: 0 10px;
+  height: 32px;
+  padding: 0 9px;
   border-radius: var(--radius-sm);
-  font-family: var(--font-sans);
   font-size: 12px;
   font-weight: 700;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  transition: transform 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
-}
-
-.icon-btn:hover {
-  background: var(--bg-elevated);
-}
-
-.icon-btn:active {
-  transform: scale(0.96);
+  gap: 4px;
 }
 
 .streak-chip {
@@ -284,12 +274,11 @@ html, body {
   color: var(--brand-primary);
 }
 
-/* Persona Mode Segmented Control */
 .persona-switcher {
   display: grid;
   grid-template-columns: 1fr 1fr;
   background: var(--bg-elevated);
-  padding: 4px;
+  padding: 3px;
   border-radius: var(--radius-md);
   border: 1px solid var(--border-subtle);
   gap: 4px;
@@ -298,9 +287,8 @@ html, body {
 .persona-btn {
   border: none;
   background: transparent;
-  padding: 7px 10px;
+  padding: 6px 10px;
   border-radius: calc(var(--radius-md) - 4px);
-  font-family: var(--font-sans);
   font-size: 12px;
   font-weight: 700;
   color: var(--text-secondary);
@@ -325,11 +313,10 @@ html, body {
 .phone-main {
   flex: 1;
   overflow-y: auto;
-  padding: 14px 16px 24px;
+  padding: 12px 14px 20px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  scroll-behavior: smooth;
+  gap: 12px;
 }
 
 .phone-main::-webkit-scrollbar {
@@ -349,19 +336,19 @@ html, body {
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
-  padding: 16px;
+  padding: 14px;
   box-shadow: var(--shadow-card);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
-  position: relative;
+  gap: 10px;
   transition: border-color 0.3s ease, background-color 0.3s ease;
 }
 
-.circle-timer-card[data-mood="impatient"] {
+.circle-timer-card[data-mood="impatient"],
+.circle-timer-card[data-mood="worried"] {
   border-color: var(--timer-warn);
-  background: linear-gradient(180deg, hsla(34, 95%, 50%, 0.06) 0%, var(--bg-surface) 100%);
+  background: linear-gradient(180deg, hsla(34, 95%, 50%, 0.08) 0%, var(--bg-surface) 100%);
 }
 
 .circle-timer-card[data-mood="angry"] {
@@ -389,7 +376,8 @@ html, body {
   color: var(--timer-calm);
 }
 
-.circle-timer-card[data-mood="impatient"] .timer-status-badge {
+.circle-timer-card[data-mood="impatient"] .timer-status-badge,
+.circle-timer-card[data-mood="worried"] .timer-status-badge {
   background: hsla(34, 95%, 50%, 0.16);
   color: hsl(28, 90%, 34%);
 }
@@ -415,19 +403,18 @@ html, body {
   border-radius: var(--radius-pill);
 }
 
-/* Circular Progress SVG Ring */
 .circle-ring-wrapper {
   position: relative;
-  width: 210px;
-  height: 210px;
+  width: 192px;
+  height: 192px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .circle-ring-svg {
-  width: 210px;
-  height: 210px;
+  width: 192px;
+  height: 192px;
   transform: rotate(-90deg);
 }
 
@@ -445,7 +432,8 @@ html, body {
   transition: stroke-dashoffset 0.35s linear, stroke 0.3s ease;
 }
 
-.circle-timer-card[data-mood="impatient"] .ring-progress {
+.circle-timer-card[data-mood="impatient"] .ring-progress,
+.circle-timer-card[data-mood="worried"] .ring-progress {
   stroke: var(--timer-warn);
 }
 
@@ -455,19 +443,18 @@ html, body {
 
 .ring-center-content {
   position: absolute;
-  inset: 18px;
+  inset: 16px;
   border-radius: 50%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 8px;
 }
 
 .mascot-stage {
-  width: 92px;
-  height: 92px;
+  width: 82px;
+  height: 82px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -475,11 +462,9 @@ html, body {
 
 .countdown-readout {
   font-family: var(--font-mono);
-  font-size: 23px;
+  font-size: 21px;
   font-weight: 700;
-  letter-spacing: -0.03em;
   color: var(--text-primary);
-  margin-top: 2px;
 }
 
 .countdown-caption {
@@ -488,24 +473,22 @@ html, body {
   color: var(--text-secondary);
 }
 
-/* Active Dose Details inside Circle Card */
 .active-dose-summary {
   width: 100%;
   text-align: center;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 3px;
 }
 
 .active-dose-title {
-  font-family: var(--font-display);
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 800;
   color: var(--text-primary);
 }
 
 .active-dose-meta {
-  font-size: 13px;
+  font-size: 12px;
   color: var(--text-secondary);
   font-weight: 500;
 }
@@ -514,8 +497,8 @@ html, body {
   width: 100%;
   background: var(--bg-elevated);
   border-radius: var(--radius-md);
-  padding: 10px 12px;
-  font-size: 13px;
+  padding: 8px 10px;
+  font-size: 12px;
   font-weight: 600;
   color: var(--text-primary);
   text-align: center;
@@ -533,51 +516,30 @@ html, body {
   border: none;
   background: var(--brand-primary);
   color: var(--text-on-accent);
-  font-family: var(--font-display);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
-  padding: 12px 14px;
+  padding: 11px 12px;
   border-radius: var(--radius-md);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
-  box-shadow: 0 4px 12px hsla(158, 48%, 18%, 0.22);
-  transition: transform 0.15s ease, background-color 0.15s ease;
-}
-
-.btn-primary-take:hover {
-  background: var(--brand-primary-hover);
-}
-
-.btn-primary-take:active {
-  transform: scale(0.97);
 }
 
 .btn-secondary-snooze {
   border: 1px solid var(--border-strong);
   background: var(--bg-surface);
   color: var(--text-primary);
-  font-family: var(--font-sans);
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
-  padding: 12px 10px;
+  padding: 11px 10px;
   border-radius: var(--radius-md);
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  transition: background-color 0.15s ease;
-}
-
-.btn-secondary-snooze:hover {
-  background: var(--bg-elevated);
 }
 
 /* ==========================================================================
-   Interactive Situation Simulator Strip (For testing Circle Timer -> Angry Face)
+   Interactive Situation Simulator Strip (Includes Critical Refill Trigger!)
    ========================================================================== */
 
 .simulator-bar {
@@ -585,10 +547,10 @@ html, body {
   background: var(--bg-elevated);
   border: 1px dashed var(--border-strong);
   border-radius: var(--radius-md);
-  padding: 10px 12px;
+  padding: 8px 10px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 }
 
 .simulator-header {
@@ -602,7 +564,7 @@ html, body {
 
 .simulator-buttons {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 6px;
 }
 
@@ -610,14 +572,12 @@ html, body {
   border: 1px solid var(--border-subtle);
   background: var(--bg-surface);
   color: var(--text-primary);
-  font-family: var(--font-sans);
   font-size: 12px;
   font-weight: 700;
-  padding: 7px 6px;
+  padding: 6px 6px;
   border-radius: var(--radius-sm);
   cursor: pointer;
   text-align: center;
-  transition: all 0.15s ease;
 }
 
 .sim-btn:hover {
@@ -626,14 +586,15 @@ html, body {
 }
 
 .sim-btn.sim-danger {
-  background: hsla(0, 82%, 52%, 0.1);
-  border-color: hsla(0, 82%, 52%, 0.35);
+  background: hsla(0, 82%, 52%, 0.12);
+  border-color: hsla(0, 82%, 52%, 0.4);
   color: var(--timer-expired);
 }
 
-.sim-btn.sim-danger:hover {
-  background: var(--timer-expired);
-  color: #fff;
+.sim-btn.sim-refill {
+  background: hsla(28, 92%, 48%, 0.14);
+  border-color: hsla(28, 92%, 48%, 0.45);
+  color: hsl(22, 90%, 34%);
 }
 
 /* ==========================================================================
@@ -644,12 +605,10 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: 2px;
 }
 
 .section-title {
-  font-family: var(--font-display);
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 800;
   color: var(--text-primary);
 }
@@ -658,7 +617,6 @@ html, body {
   border: none;
   background: transparent;
   color: var(--brand-primary);
-  font-family: var(--font-sans);
   font-size: 12px;
   font-weight: 700;
   cursor: pointer;
@@ -667,25 +625,19 @@ html, body {
 .med-list {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 
 .med-card {
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
-  padding: 12px 14px;
+  padding: 10px 12px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  box-shadow: var(--shadow-card);
   cursor: pointer;
-  transition: transform 0.15s ease, border-color 0.15s ease;
-}
-
-.med-card:hover {
-  border-color: var(--border-strong);
 }
 
 .med-card.active-selected {
@@ -700,50 +652,38 @@ html, body {
 .med-left {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   min-width: 0;
 }
 
 .med-icon-box {
-  width: 42px;
-  height: 42px;
+  width: 38px;
+  height: 38px;
   border-radius: var(--radius-sm);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 20px;
-  flex-shrink: 0;
+  font-size: 18px;
   background: var(--bg-subtle);
-}
-
-.med-info {
-  min-width: 0;
+  flex-shrink: 0;
 }
 
 .med-name {
-  font-family: var(--font-display);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--text-primary);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .med-sub {
   font-size: 12px;
   color: var(--text-secondary);
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-wrap: wrap;
 }
 
 .med-right {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 4px;
+  gap: 3px;
   flex-shrink: 0;
 }
 
@@ -751,13 +691,12 @@ html, body {
   font-family: var(--font-mono);
   font-size: 12px;
   font-weight: 700;
-  color: var(--text-primary);
 }
 
 .med-status-pill {
   font-size: 12px;
   font-weight: 700;
-  padding: 3px 8px;
+  padding: 2px 8px;
   border-radius: var(--radius-pill);
 }
 
@@ -781,12 +720,12 @@ html, body {
    ========================================================================== */
 
 .phone-tab-bar {
-  height: 68px;
+  height: 62px;
   background: var(--bg-surface);
   border-top: 1px solid var(--border-subtle);
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  padding: 6px 12px 10px;
+  padding: 5px 10px 8px;
   flex-shrink: 0;
   z-index: 20;
 }
@@ -795,17 +734,15 @@ html, body {
   border: none;
   background: transparent;
   color: var(--text-muted);
-  font-family: var(--font-sans);
   font-size: 12px;
   font-weight: 700;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 3px;
+  gap: 2px;
   cursor: pointer;
   border-radius: var(--radius-sm);
-  transition: color 0.15s ease, background-color 0.15s ease;
 }
 
 .tab-item.active {
@@ -813,30 +750,36 @@ html, body {
   background: var(--bg-subtle);
 }
 
-.tab-icon {
-  font-size: 17px;
-  line-height: 1;
-}
-
 /* ==========================================================================
-   PERSISTENT ANGRY FACE SCREEN LOCKDOWN OVERLAY
-   (Appears ONLY when Circle Timer hits 00:00 without taking medication!)
+   PERSISTENT LOCKDOWN OVERLAY (Supports Worried -> Angry in Kid Mode,
+   and Critical Refill Lockdown + Circle Timer Expired Lockdown)
    ========================================================================== */
 
 .angry-lockdown-overlay {
   position: absolute;
   inset: 0;
   z-index: 100;
-  background: linear-gradient(180deg, hsl(356, 78%, 22%) 0%, hsl(0, 82%, 34%) 50%, hsl(356, 84%, 18%) 100%);
+  background: linear-gradient(180deg, hsl(356, 78%, 22%) 0%, hsl(0, 82%, 32%) 50%, hsl(356, 84%, 16%) 100%);
   color: #fff;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 48px 18px 20px;
+  padding: 40px 14px 14px;
   opacity: 0;
   pointer-events: none;
-  transform: scale(1.04);
-  transition: opacity 0.28s ease, transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+  transform: scale(1.03);
+  transition: opacity 0.25s ease, transform 0.25s ease, background 0.5s ease;
+  overflow-y: auto;
+  gap: 8px;
+}
+
+/* Kid Mode Worried Stage Gradient (Before escalating to full Angry) */
+.angry-lockdown-overlay[data-kid-stage="worried"] {
+  background: linear-gradient(180deg, hsl(228, 56%, 24%) 0%, hsl(262, 52%, 32%) 50%, hsl(28, 75%, 28%) 100%);
+}
+
+.angry-lockdown-overlay[data-kid-stage="worried-angry"] {
+  background: linear-gradient(180deg, hsl(18, 78%, 26%) 0%, hsl(352, 72%, 34%) 55%, hsl(356, 80%, 20%) 100%);
 }
 
 .angry-lockdown-overlay.active {
@@ -846,40 +789,64 @@ html, body {
 }
 
 .angry-lockdown-overlay.shake-reject {
-  animation: angryScreenShake 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+  animation: angryScreenShake 0.45s both;
 }
 
 .lockdown-top-bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
+  gap: 6px;
 }
 
 .lockdown-alert-pill {
   background: hsla(0, 0%, 0%, 0.35);
   border: 1px solid hsla(0, 100%, 80%, 0.4);
-  padding: 5px 12px;
+  padding: 4px 10px;
   border-radius: var(--radius-pill);
   font-size: 12px;
   font-weight: 800;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
 }
 
 .fake-dismiss-btn {
   background: hsla(0, 0%, 100%, 0.14);
   border: 1px solid hsla(0, 0%, 100%, 0.3);
   color: #fff;
-  padding: 6px 11px;
+  padding: 4px 10px;
   border-radius: var(--radius-pill);
-  font-family: var(--font-sans);
   font-size: 12px;
   font-weight: 700;
   cursor: pointer;
+}
+
+/* Kid Mode Worried -> Angry Escalation Stepper Pill */
+.kid-mood-stepper {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  width: 100%;
+  background: hsla(0, 0%, 0%, 0.28);
+  padding: 4px;
+  border-radius: var(--radius-pill);
+  border: 1px solid hsla(0, 0%, 100%, 0.2);
+}
+
+.kid-stage-chip {
+  border: none;
+  background: transparent;
+  color: hsla(0, 0%, 100%, 0.72);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 6px;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  text-align: center;
+}
+
+.kid-stage-chip.active {
+  background: #fff;
+  color: hsl(224, 42%, 16%);
+  font-weight: 800;
 }
 
 .angry-face-hero {
@@ -887,55 +854,52 @@ html, body {
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: 10px;
+  gap: 6px;
 }
 
 .angry-svg-container {
-  width: 148px;
-  height: 148px;
-  position: relative;
+  width: 106px;
+  height: 106px;
   display: flex;
   align-items: center;
   justify-content: center;
-  animation: angryStomp 0.9s infinite ease-in-out;
+  animation: angryStomp 0.95s infinite ease-in-out;
 }
 
 .angry-headline {
-  font-family: var(--font-display);
-  font-size: 24px;
+  font-size: 18px;
   font-weight: 800;
   line-height: 1.15;
-  letter-spacing: -0.02em;
 }
 
 .angry-subcopy {
-  font-size: 13px;
-  color: hsla(0, 0%, 100%, 0.9);
-  max-width: 330px;
-  font-weight: 500;
+  font-size: 12px;
+  color: hsla(0, 0%, 100%, 0.92);
 }
 
 .scold-feedback-banner {
   background: hsla(0, 0%, 0%, 0.42);
   border: 1px solid hsla(45, 100%, 65%, 0.65);
   color: hsl(45, 100%, 82%);
-  padding: 8px 12px;
+  padding: 6px 10px;
   border-radius: var(--radius-sm);
   font-size: 12px;
   font-weight: 700;
   width: 100%;
-  text-align: center;
 }
 
-/* Medication Guarantee Card inside Lockdown / Modal */
+/* ==========================================================================
+   Multi-Modal Verification Guarantee Box
+   ========================================================================== */
+
 .guarantee-box {
-  background: hsl(0, 0%, 100%);
+  background: #fff;
   color: hsl(160, 32%, 12%);
   border-radius: var(--radius-lg);
-  padding: 16px;
+  padding: 12px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
   box-shadow: 0 18px 40px hsla(0, 0%, 0%, 0.35);
 }
 
@@ -944,12 +908,11 @@ html, body {
   align-items: center;
   justify-content: space-between;
   border-bottom: 1px solid hsl(38, 18%, 88%);
-  padding-bottom: 8px;
+  padding-bottom: 5px;
 }
 
 .guarantee-box-title {
-  font-family: var(--font-display);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 800;
   color: hsl(0, 76%, 42%);
 }
@@ -962,33 +925,150 @@ html, body {
   border-radius: var(--radius-pill);
 }
 
-.guarantee-checklist {
+/* Interactive Verification Modules Grid (Face Scan, Pill Photo, Shake Water, PIN) */
+.verification-modules-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.verify-module-card {
+  background: hsl(40, 33%, 96%);
+  border: 1.5px solid hsl(38, 18%, 82%);
+  border-radius: var(--radius-sm);
+  padding: 8px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 5px;
+  transition: all 0.2s ease;
+}
+
+.verify-module-card.verified {
+  background: hsla(156, 62%, 34%, 0.1);
+  border-color: hsl(156, 62%, 34%);
+}
+
+.module-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.module-status-tag {
+  font-size: 12px;
+  font-weight: 700;
+  color: hsl(28, 86%, 38%);
+}
+
+.verify-module-card.verified .module-status-tag {
+  color: hsl(156, 68%, 28%);
+}
+
+/* Camera / Face Scan Viewport Box */
+.scanner-preview-box {
+  position: relative;
+  height: 58px;
+  border-radius: 8px;
+  background: hsl(210, 28%, 14%);
+  color: #fff;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.scanner-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.65;
+}
+
+.scanner-laser {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #34d399;
+  box-shadow: 0 0 8px #34d399;
+  animation: laserSweep 1.3s ease-in-out infinite alternate;
+}
+
+.module-action-btn {
+  border: none;
+  background: hsl(158, 48%, 22%);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  width: 100%;
+}
+
+.verify-module-card.verified .module-action-btn {
+  background: hsl(156, 62%, 34%);
+}
+
+/* Parent PIN Input Row (Kid Mode) */
+.pin-input-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pin-field {
+  width: 100%;
+  padding: 5px 8px;
+  border-radius: 6px;
+  border: 1px solid hsl(216, 35%, 72%);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-align: center;
+}
+
+/* Water Shake Progress Meter */
+.shake-meter-bar {
+  width: 100%;
+  height: 8px;
+  background: hsl(38, 20%, 86%);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.shake-meter-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #0ea5e9, #10b981);
+  transition: width 0.2s ease;
 }
 
 .check-row {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   background: hsl(40, 33%, 96%);
   border: 1px solid hsl(38, 18%, 84%);
-  padding: 10px 12px;
+  padding: 7px 10px;
   border-radius: var(--radius-sm);
   cursor: pointer;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
-  user-select: none;
-  transition: border-color 0.15s ease, background-color 0.15s ease;
 }
 
 .check-row input[type="checkbox"] {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   accent-color: hsl(156, 62%, 34%);
-  cursor: pointer;
-  flex-shrink: 0;
 }
 
 .check-row.checked {
@@ -996,7 +1076,7 @@ html, body {
   background: hsla(156, 62%, 34%, 0.08);
 }
 
-/* Hold-to-Guarantee Button */
+/* Hold-to-Guarantee Final Seal Button */
 .hold-guarantee-btn {
   position: relative;
   overflow: hidden;
@@ -1004,23 +1084,19 @@ html, body {
   border: none;
   background: hsl(158, 48%, 22%);
   color: #fff;
-  font-family: var(--font-display);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 800;
-  padding: 14px 16px;
+  padding: 12px 14px;
   border-radius: var(--radius-md);
   cursor: pointer;
   user-select: none;
-  -webkit-user-select: none;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  transition: transform 0.15s ease, opacity 0.2s ease;
 }
 
 .hold-guarantee-btn:disabled {
-  opacity: 0.5;
+  opacity: 0.48;
   cursor: not-allowed;
 }
 
@@ -1042,10 +1118,7 @@ html, body {
 
 .lockdown-snooze-row {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 6px;
-  padding-top: 2px;
+  gap: 5px;
 }
 
 .lockdown-snooze-btn {
@@ -1053,20 +1126,15 @@ html, body {
   border: 1px solid hsl(38, 18%, 82%);
   background: hsl(40, 25%, 96%);
   color: hsl(160, 20%, 25%);
-  font-family: var(--font-sans);
   font-size: 12px;
   font-weight: 700;
-  padding: 8px 6px;
+  padding: 6px 4px;
   border-radius: var(--radius-sm);
   cursor: pointer;
 }
 
-.lockdown-snooze-btn:hover {
-  background: hsl(38, 25%, 90%);
-}
-
 /* ==========================================================================
-   Standard Guarantee / Snooze / Add Med Modal Sheet
+   Bottom Sheet Modal & Toast
    ========================================================================== */
 
 .sheet-backdrop {
@@ -1074,7 +1142,6 @@ html, body {
   inset: 0;
   z-index: 80;
   background: hsla(160, 30%, 8%, 0.55);
-  backdrop-filter: blur(3px);
   display: flex;
   align-items: flex-end;
   opacity: 0;
@@ -1091,20 +1158,13 @@ html, body {
   width: 100%;
   background: var(--bg-surface);
   color: var(--text-primary);
-  border-radius: 26px 26px 0 0;
-  padding: 18px 18px 26px;
+  border-radius: 24px 24px 0 0;
+  padding: 16px 16px 22px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  box-shadow: var(--shadow-float);
-  transform: translateY(100%);
-  transition: transform 0.26s cubic-bezier(0.22, 1, 0.36, 1);
-  max-height: 85%;
+  gap: 10px;
+  max-height: 88%;
   overflow-y: auto;
-}
-
-.sheet-backdrop.open .bottom-sheet {
-  transform: translateY(0);
 }
 
 .sheet-header {
@@ -1114,17 +1174,15 @@ html, body {
 }
 
 .sheet-title {
-  font-family: var(--font-display);
-  font-size: 17px;
+  font-size: 16px;
   font-weight: 800;
 }
 
 .sheet-close {
   border: 1px solid var(--border-subtle);
   background: var(--bg-elevated);
-  color: var(--text-primary);
-  width: 30px;
-  height: 30px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   font-weight: 800;
   cursor: pointer;
@@ -1133,7 +1191,7 @@ html, body {
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 4px;
 }
 
 .form-group label {
@@ -1144,40 +1202,31 @@ html, body {
 
 .form-input, .form-select {
   width: 100%;
-  padding: 10px 12px;
+  padding: 9px 11px;
   border-radius: var(--radius-sm);
   border: 1px solid var(--border-strong);
   background: var(--bg-app);
   color: var(--text-primary);
-  font-family: var(--font-sans);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
 }
 
-/* ==========================================================================
-   Toast Celebration Banner
-   ========================================================================== */
-
 .celebration-toast {
   position: absolute;
-  top: 52px;
-  left: 16px;
-  right: 16px;
+  top: 48px;
+  left: 14px;
+  right: 14px;
   z-index: 120;
   background: hsl(156, 64%, 28%);
   color: #fff;
-  padding: 12px 14px;
+  padding: 10px 12px;
   border-radius: var(--radius-md);
-  box-shadow: var(--shadow-float);
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   opacity: 0;
   pointer-events: none;
-  transform: translateY(-16px);
-  transition: opacity 0.25s ease, transform 0.25s ease;
+  transform: translateY(-14px);
+  transition: all 0.25s ease;
 }
 
 .celebration-toast.show {
@@ -1186,7 +1235,7 @@ html, body {
 }
 
 /* ==========================================================================
-   Keyframe Animations for Characters & Lockdown
+   Animations
    ========================================================================== */
 
 @keyframes pulseFast {
@@ -1194,11 +1243,16 @@ html, body {
   to { opacity: 1; transform: scale(1.15); }
 }
 
+@keyframes laserSweep {
+  from { top: 6px; }
+  to { top: 48px; }
+}
+
 @keyframes angryStomp {
   0%, 100% { transform: translateY(0) rotate(0deg) scale(1); }
-  25% { transform: translateY(-6px) rotate(-3deg) scale(1.04); }
+  25% { transform: translateY(-5px) rotate(-3deg) scale(1.03); }
   50% { transform: translateY(0) rotate(3deg) scale(1.02); }
-  75% { transform: translateY(-4px) rotate(-2deg) scale(1.05); }
+  75% { transform: translateY(-4px) rotate(-2deg) scale(1.04); }
 }
 
 @keyframes angryScreenShake {
